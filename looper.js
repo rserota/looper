@@ -1,6 +1,6 @@
 // Timing stuff goes here
 var start = performance.now()
-var bpm = 60 // beats per minute
+var bpm = 90 // beats per minute
 var beat = ( 60 / bpm ) * 1000 // length of one beat
 var b = function(numBeats) {
     return ( numBeats * beat ) / 1000;
@@ -9,18 +9,32 @@ var b = function(numBeats) {
 
 // Audio preloading/initialization/whatever goes here.
 var kick = new Wad({
-    source : 'http://localhost:8000/kick.mp3'
+    source : 'http://localhost:8000/kick.mp3',
 })
+// kick.play()
 var hat = new Wad(Wad.presets.hiHatClosed)
+// var hatOpen = new Wad({})
 var snare = new Wad({ source : 'noise', volume : 3, env : {attack : .001, decay : .01, sustain : .2, hold : .03, release : .02}, filter : {type : 'bandpass', frequency : 300, q : .180 }, delay : { delayTime : .05} })
+
+
+
+// var crash = new Wad({})
+// var highTom = new Wad({})
+// var midTom = new Wad({})
+// var lowTom = new Wad({})
+var cowbell = new Wad({
+    source : 'http://localhost:8000/cowbell.wav',
+})
+
 
 var piano = new Wad({source:'sine', env:{attack:.005, decay:.2, sustain:.8, hold:4, release:.3}, filter : {type:'lowpass', frequency:700}})
 
+// var bass = new Wad({})
+
 var voice = new Wad({ source : 'mic'})
+
+
 var looper = new Wad.Poly({
-    // recConfig : { 
-    //     workerPath : '/src/Recorderjs/recorderWorker.js'
-    // },
     // reverb : {
     //     wet : .8,
     //     impulse : 'http://localhost:8000/widehall.wav'
@@ -31,12 +45,18 @@ var looper = new Wad.Poly({
         feedback : 1,
         wet      : 1
     },
+    // recConfig : { 
+    //     workerPath : '/src/Recorderjs/recorderWorker.js'
+    // },
     // filter : {
     //     type : 'lowpass',
     //     frequency : 1300
     // }
 })
 var mt = new Wad.Poly({ 
+    // recConfig : { 
+    //     workerPath : '/src/Recorderjs/recorderWorker.js'
+    // },
     // reverb : { 
     //     impulse :'http://localhost:8000/widehall.wav',
     //     wet : .15
@@ -52,24 +72,20 @@ var mt = new Wad.Poly({
 // mt.add(voice)
 
 
-var saw1 = new Wad({
+var alpha = new Wad({
     source : 'sawtooth',
-    env : { hold : 17 }
+    env : {
+        hold : 2,
+        attack : .02,
+        release : .3
+    },
+    panning : -10
 })
-var saw2 = new Wad({
-    source : 'sawtooth',
-    env : { hold : 17 },
-    detune : 14
-})
-var saw3 = new Wad({
-    source : 'sawtooth',
-    env : { hold : 17 },
-    detune : -7
-})
-var alpha = new Wad.Poly({ filter : { type : 'lowpass', frequency : 500 } })
-alpha.add(saw1).add(saw2).add(saw3)
 mt.add(alpha)
+
 var app = { 
+    panning : [0, 0, 4],
+    detune : 0,
     rig : {
         alpha : alpha,
         mode : 'alpha'
@@ -144,7 +160,7 @@ var midiRig25 = function(event){
         }
 
         else if ( event.data[0] === 144 && event.data[1] >= 60 ) { // note data
-            app.rig.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : app.detune, callback : function(that){
+            app.rig.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : app.detune, panning: app.panning, callback : function(that){
             }})
             console.log(app.detune)
         }
@@ -154,6 +170,11 @@ var midiRig25 = function(event){
             saw1.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
             app.detune =    ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
             // console.log(app.detune)
+        }
+        else if ( event.data[0] === 176 && event.data[1] === 22 ) {
+            app.panning[0] = ( event.data[2] - 64 ) * ( 10 / 64 )
+            alpha.setPanning(app.panning)
+            console.log('panning: ', app.panning)
         }
     }
 
@@ -171,31 +192,31 @@ var midiRig25 = function(event){
     else if ( app.rig.mode === 'gamma' ) {
         console.log('gamma') 
         if ( event.data[0] === 144 && event.data[1] >= 60 ) { // stop note.
-            if      ( event.data[1] === 60 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 61 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 62 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 63 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 64 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 65 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 66 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 67 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 68 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 69 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 70 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 71 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 72 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 73 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 74 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 75 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 76 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 77 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 78 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 79 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 80 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 81 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 82 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 83 ) { foo.play({ volume : , env : { attack : } }); }
-            else if ( event.data[1] === 84 ) { foo.play({ volume : , env : { attack : } }); }
+            if      ( event.data[1] === 60 ) { console.log() }
+        //     else if ( event.data[1] === 61 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 62 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 63 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 64 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 65 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 66 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 67 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 68 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 69 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 70 ) { foo.play({ volume : , env : { attack : } }); }
+        //     else if ( event.data[1] === 71 ) { foo.play({ volume : , env : { attack : } }); }
+            else if ( event.data[1] === 72 ) { hat.play({ volume : 1 }); }
+            else if ( event.data[1] === 73 ) { hatOpen.play({ volume : 1 }); }
+            else if ( event.data[1] === 74 ) { kick.play({ volume : 1 }); }
+        //     else if ( event.data[1] === 75 ) { foo.play({ volume : , env : { attack : } }); }
+            else if ( event.data[1] === 76 ) { snare.play({ volume : 1 }); }
+            else if ( event.data[1] === 77 ) { lowTom.play({ volume : 1 }); }
+        //     else if ( event.data[1] === 78 ) { foo.play({ volume : , env : { attack : } }); }
+            else if ( event.data[1] === 79 ) { midTom.play({ volume : 1 }); }
+        //     else if ( event.data[1] === 80 ) { foo.play({ volume : , env : { attack : } }); }
+            else if ( event.data[1] === 81 ) { highTom.play({ volume : 1 }); }
+        //     else if ( event.data[1] === 82 ) { foo.play({ volume : , env : { attack : } }); }
+            else if ( event.data[1] === 83 ) { cowbell.play({ volume : 1 }); }
+            else if ( event.data[1] === 84 ) { crash.play({ volume : 1 }); }
         }
     }
 
@@ -272,17 +293,21 @@ $(document).ready(function(){
     if ( Wad.midiInputs[0] ) { Wad.midiInputs[0].onmidimessage = midiRig25 }
     else { setTimeout(function(){ Wad.midiInputs[0].onmidimessage = midiRig25 }, 100)}
 
+    var looping = false
     $(document).on('keydown', function(event){
         console.log(event)
-        var looping = false
         if ( event.which === 32 ) {
             looping = !looping
             if ( looping ) { looper.add(mt) }
             else if ( !looping ) {looper.remove(mt) }
         }
-        else if ( event.which === 93 || event.which === 91 ) {
-            app.reset();
-        }
+        // else if ( event.which === 93 || event.which === 91 ) {
+        //     app.reset();
+        // }
+    })
+
+    $('#reset').on('click', function(){
+        app.reset()
     })
 
     $('.note').on('mousedown', function(){
@@ -291,6 +316,10 @@ $(document).ready(function(){
     $('.note').on('mouseup', function(){
         piano.stop()
         console.log(mt.noteEstimate)
+    })
+    $('.mixer-track').on('click', function(){
+        $('.mixer-track').removeClass('selected')
+        $(this).addClass('selected')
     })
 
 })
