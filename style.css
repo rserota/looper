@@ -1,39 +1,69 @@
 .beatBox {
     display : inline-block;
-    height : 200px;
-    width : 200px;
+    height : 50px;
+    width : 50px;
     border : 3px solid black;
+    border-radius: 5px;
+    margin : 5px;
     transition : all .01s;
     text-align:center;
     line-height:150px;
     vertical-align: middle;
+    background-color: rgb(110,150,120);
 }
 body {
     background-color: slategray;
-}
-.beatBox.on {
-    transition : all .05s;
-    background-color : blue;
+    padding: 20px;
 }
 
-.note {
+#controls button {
+    border: 2px solid black;
+    margin: 5px;
+    height: 40px;
+    width: 115px;
+}
+button:focus {
+    outline:0;
+}
+
+
+.beatBox.on {
+    background-color : darkslategray;
+    border: 3px solid ghostwhite;
+}
+
+.beatBoxes {
+    display: inline-block;
+}
+#controls {
+    display: inline-block;
+    /*border: 2px solid black;*/
+    padding: 15px;
+}
+.note, .mixer-track {
     display : inline-block;
     height : 70px;
-    width : 100px;
-    border : 3px solid black;
-    text-align: center;
-    vertical-align: middle;
+    width : 90px;
+    /*border : 3px solid black;*/
+    /*text-align: center;*/
+    /*vertical-align: middle;*/
+}
+
+#controls button.selected {
+    background-color: rgba(200,20,20,.85);
+    color: ghostwhite;
+    /*background-color: darkslategray;*/
 }
 
 .space {
     height: 40px;
 }
 
-#micOn {
+#micInfo {
     display: inline-block;
     height: 200px;
-    width : 300px;
-    border : 3px solid black;
+    width : 240px;
+    /*border : 3px solid black;*/
     margin-left : 40px;
     text-align: center;
     vertical-align: middle;
@@ -42,7 +72,7 @@ body {
 }
 
 #metronome {
-    background-color: red;
+    background-color: rgba(200,20,20,.85);
     border: 5px solid black;
     height: 200px;
     width: 200px;
@@ -51,7 +81,7 @@ body {
     border-top-right-radius: 200px;
     border-top-left-radius: 200px;
     transform: rotate(45deg);
-    margin-top:10%;
+    margin-top:5%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -59,10 +89,10 @@ body {
 #metronome-container {
     height: 260px;
     width: 260px;
-    border-top: 20px solid green;
-    border-bottom: 20px solid black;
-    border-right: 20px solid black;
-    border-left: 20px solid green;
+    border-top: 20px solid rgb(110,150,120);
+    border-bottom: 20px solid darkslategray;
+    border-right: 20px solid darkslategray;
+    border-left: 20px solid rgb(110,150,120);
     border-radius: 500px;
     margin-left: auto;
     margin-right: auto;
