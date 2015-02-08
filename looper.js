@@ -9,6 +9,7 @@ var b = function(numBeats) {
 // Audio preloading/initialization/whatever goes here.
 var kick = new Wad({
     source : 'http://localhost:8000/kick.mp3',
+    // callback : function(that){that.play()}
 })
 // kick.play()
 var hat = new Wad(Wad.presets.hiHatClosed)
@@ -88,7 +89,6 @@ var beta = new Wad({
     //     }
     // }
 })
-
 var app = { 
     panning : [0, 0, 4],
     detune : 0,
@@ -100,7 +100,7 @@ var app = {
     }
 }
 
-looper = new Wad.Poly({
+var looper = new Wad.Poly({
     // reverb : {
     //     wet : .8,
     //     impulse : 'http://localhost:8000/widehall.wav'
@@ -149,10 +149,17 @@ var mt = new Wad.Poly({
 // Animation / UI stuff goes here
 app.foo = function(){
     looper.delay.delayNode.disconnect();
+    looper.delay.feedbackNode.disconnect();
+    looper.delay.input.disconnect();
+
 }
 app.bar = function(){
     looper.delay.delayNode.connect(looper.delay.feedbackNode)
     looper.delay.delayNode.connect(looper.delay.wetNode)
+    looper.delay.feedbackNode.connect(looper.delay.delayNode);
+    looper.delay.input.connect(looper.delay.delayNode);
+    looper.delay.input.connect(looper.delay.output);
+
 
 }
 app.reset = function(){
@@ -219,13 +226,15 @@ var logPitch = function(){
 
 // var saw = new Wad({source:'sawtooth', volume : 2, env : { attack : .051, hold : 1.33, release : .3 }})
 // var triangle = new Wad({source:'triangle', volume : .2, env : { attack : .1, hold : .3, release : .3 }})
-// Wad.midiInstrument = piano
+Wad.midiInstrument = app.rig.alpha
 
 // using octave shift, so lowest note is [144, 60, 1]
 // I need to make sure that the keyboard is shifted up one octave.
 var midiRig25 = function(event){
     console.log(event.receivedTime, event.data)
-
+    if ( event.data[0] === 177 && event.data[1] === 49 ) {
+        app.rig.alpha.play({pitch : Wad.pitchesArray[event.data[2]+24], env : { hold : .2 }})
+    }
 
     if ( event.data[0] === 128 && event.data[1] === 48 && event.data[2] === 0 ) { app.rig.mode = 'alpha' }
     if ( event.data[0] === 128 && event.data[1] === 49 && event.data[2] === 0 ) { app.rig.mode = 'beta'  }
@@ -239,7 +248,7 @@ var midiRig25 = function(event){
         }
 
         else if ( event.data[0] === 144 && event.data[1] >= 60 ) { // note data
-            if ( app.rig.pedalDown === false ) {
+            if ( app.rig.pedalDown === true ) {
                 app.rig.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : app.detune, panning: app.panning, volume : 2.5 })
             }
             else {
@@ -428,51 +437,51 @@ var midiRig25 = function(event){
     }
 }
 
-// var midiRig88 = function(event){
-//     console.log(event.receivedTime, event.data)
-//     if ( event.data[0] === 128 ) {
-//         Wad.midiInstrument.stop(Wad.pitchesArray[event.data[1]-12])
-//     }
-//     else if ( event.data[0] === 144 ) { // 144 means the midi message has note data
-//         // console.log('note')
-//         if ( event.data[1] === 36 && event.data[2] > 0 ) { hat.play() }
-//         else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-//         // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-//         else if ( event.data[1] === 40 && event.data[2] > 0 ) { snare.play() }
-//         // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-//         // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-//         // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-//         // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-//         // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-//         // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-//         // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
+var midiRig88 = function(event){
+    console.log(event.receivedTime, event.data)
+    if ( event.data[0] === 128 ) {
+        Wad.midiInstrument.stop(Wad.pitchesArray[event.data[1]-12])
+    }
+    else if ( event.data[0] === 144 ) { // 144 means the midi message has note data
+        // console.log('note')
+        // if ( event.data[1] === 36 && event.data[2] > 0 ) { hat.play() }
+        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
+        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
+        // else if ( event.data[1] === 40 && event.data[2] > 0 ) { snare.play() }
+        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
+        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
+        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
+        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
+        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
+        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
+        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
 
-//         else if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
-//             console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
-//             Wad.midiInstrument.stop(Wad.pitchesArray[event.data[1]-12])
-//         }
-//         else if ( event.data[2] > 0 ) {
-//             console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
-//             var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
-//             Wad.midiInstrument.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : app.detune, callback : function(that){
-//             }})
-//         }
-//     }
-//     else if ( event.data[0] === 176 ) { // 176 means the midi message has controller data
-//         console.log('controller')
-//         if ( event.data[1] == 64 ) {
-//             if ( event.data[2] == 127 ) { looper.add(mt) ; console.log('on')}
-//             else if ( event.data[2] == 0 ) { looper.remove(mt); console.log('off')}
-//         }
-//     }
-//     else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
-//         console.log('pitch bend')
-//         console.log( ( event.data[2] - 64 ) * ( 100 / 64 ) )
-//         Wad.midiInstrument.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
-//         app.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
-//     }
-// }
-//////////////////////////////////////////////////////////////////
+        if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
+            console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
+            Wad.midiInstrument.stop(Wad.pitchesArray[event.data[1]-12])
+        }
+        else if ( event.data[2] > 0 ) {
+            console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
+            var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+            Wad.midiInstrument.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : app.detune, callback : function(that){
+            }})
+        }
+    }
+    else if ( event.data[0] === 176 ) { // 176 means the midi message has controller data
+        console.log('controller')
+        if ( event.data[1] == 64 ) {
+            if ( event.data[2] == 127 ) { looper.add(mt) ; console.log('on')}
+            else if ( event.data[2] == 0 ) { looper.remove(mt); console.log('off')}
+        }
+    }
+    else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
+        console.log('pitch bend')
+        console.log( ( event.data[2] - 64 ) * ( 100 / 64 ) )
+        Wad.midiInstrument.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
+        app.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+    }
+}
+////////////////////////////////////////////////////////////////
 
 
 
@@ -519,13 +528,13 @@ $(document).ready(function(){
     })
     // if ( Wad.midiInputs[0] ) { Wad.midiInputs[0].onmidimessage = midiRig88 }
     // else { setTimeout(function(){ Wad.midiInputs[0].onmidimessage = midiRig88 }, 100)}
-
-    if ( Wad.midiInputs[0] ) { Wad.midiInputs[0].onmidimessage = midiRig25 }
-    else { setTimeout(function(){ Wad.midiInputs[0].onmidimessage = midiRig25 }, 100)}
+    console.log(Wad.midiInputs)
+    if ( Wad.midiInputs[0] ) { Wad.midiInputs[0].onmidimessage = midiRig88 }
+    else { setTimeout(function(){ Wad.midiInputs[0].onmidimessage = midiRig88 }, 1000)}
 
     var looping = false
     $(document).on('keydown', function(event){
-        console.log(event)
+        // console.log(event)
         if ( event.which === 49 ) {
             looping = !looping
             if ( looping ) { looper.add(mt); $('#record').addClass('selected') }
@@ -535,8 +544,8 @@ $(document).ready(function(){
         // else if ( event.which === 93 || event.which === 91 ) {
         //     app.reset();
         // }
-        // if ( event.which >= 49 && event.which <= 56 ) { //for multi-track mixer
-
+        if ( event.which >= 49 && event.which <= 56 ) { //for multi-track mixer
+            beta.play({env:{hold:.1}})
         //     var $selectedTrack = $('.mixer-track:nth-child(' + (event.which - 48) + ')')
         //     if ( $selectedTrack.hasClass('selected') ) {
         //         $selectedTrack.removeClass('selected')
@@ -545,7 +554,7 @@ $(document).ready(function(){
         //         $('.mixer-track').removeClass('selected')
         //         $selectedTrack.addClass('selected')
         //     }
-        // }
+        }
     })
 
     $('#reset').on('click', function(){
@@ -564,5 +573,18 @@ $(document).ready(function(){
     //     $('.mixer-track').removeClass('selected')
     //     $(this).addClass('selected')
     // })
+
+    $('a[href*=#]:not([href=#])').click(function() {
+      if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+        var target = $(this.hash);
+        target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+        if (target.length) {
+          $('html,body').animate({
+            scrollTop: target.offset().top
+          }, 1000);
+          return false;
+        }
+      }
+    });
 
 })

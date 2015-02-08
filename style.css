@@ -15,6 +15,9 @@ body {
     background-color: slategray;
     padding: 20px;
 }
+#controls {
+    vertical-align: top;
+}
 
 #controls button {
     border: 2px solid black;
@@ -66,7 +69,7 @@ button:focus {
     /*border : 3px solid black;*/
     margin-left : 40px;
     text-align: center;
-    vertical-align: middle;
+    vertical-align: top;
     line-height: 150px;
     font-size:32px;
 }
