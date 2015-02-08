@@ -5,7 +5,6 @@ var b = function(numBeats) {
     return ( numBeats * beat ) / 1000;
 }
 
-
 // Audio preloading/initialization/whatever goes here.
 var kick = new Wad({
     source : 'http://localhost:8000/kick.mp3',
@@ -90,6 +89,10 @@ var beta = new Wad({
     // }
 })
 var app = { 
+    recordingTo : null,
+    numLoopTracks : 8,
+    preDest : new Wad.Poly(),
+    loopTracks : [],
     panning : [0, 0, 4],
     detune : 0,
     rig : {
@@ -97,29 +100,37 @@ var app = {
         beta      : beta,
         mode      : 'gamma',
         pedalDown : false
+    },
+}
+var setupLoopTracks = function(app){
+    for ( var i=0; i<app.numLoopTracks; i++ ) {
+
+        var loopTrack = new Wad.Poly({
+            // reverb : {
+            //     wet : .8,
+            //     impulse : 'http://localhost:8000/widehall.wav'
+            // },
+            delay : {
+                delayTime: b(16),
+                maxDelayTime: 20,
+                feedback : 1,
+                wet      : 1
+            },
+            // recConfig : { 
+            //     workerPath : '/src/Recorderjs/recorderWorker.js'
+            // },
+            // filter : {
+            //     type : 'lowpass',
+            //     frequency : 1300
+            // }
+        })
+        app.preDest.add(loopTrack)
+        app.loopTracks.push(loopTrack)
     }
 }
+setupLoopTracks(app);
 
-var looper = new Wad.Poly({
-    // reverb : {
-    //     wet : .8,
-    //     impulse : 'http://localhost:8000/widehall.wav'
-    // },
-    delay : {
-        delayTime: b(16),
-        maxDelayTime: 20,
-        feedback : 1,
-        wet      : 1
-    },
-    // recConfig : { 
-    //     workerPath : '/src/Recorderjs/recorderWorker.js'
-    // },
-    // filter : {
-    //     type : 'lowpass',
-    //     frequency : 1300
-    // }
-})
-var mt = new Wad.Poly({ 
+app.soundSources = new Wad.Poly({ 
     // recConfig : { 
     //     workerPath : '/src/Recorderjs/recorderWorker.js'
     // },
@@ -147,24 +158,25 @@ var mt = new Wad.Poly({
 
 
 // Animation / UI stuff goes here
-app.foo = function(){
-    looper.delay.delayNode.disconnect();
-    looper.delay.feedbackNode.disconnect();
-    looper.delay.input.disconnect();
+var disconnectDelay = function(trackNum){
+    app.loopTracks[trackNum].delay.delayNode.delayNode.disconnect();
+    app.loopTracks[trackNum].delay.delayNode.feedbackNode.disconnect();
+    app.loopTracks[trackNum].delay.delayNode.input.disconnect();
 
 }
-app.bar = function(){
-    looper.delay.delayNode.connect(looper.delay.feedbackNode)
-    looper.delay.delayNode.connect(looper.delay.wetNode)
-    looper.delay.feedbackNode.connect(looper.delay.delayNode);
-    looper.delay.input.connect(looper.delay.delayNode);
-    looper.delay.input.connect(looper.delay.output);
+var reconnectDelay = function(trackNum){
+    app.loopTracks[trackNum].delay.delayNode.delayNode.connect(app.loopTracks[trackNum].delay.delayNode.feedbackNode)
+    app.loopTracks[trackNum].delay.delayNode.delayNode.connect(app.loopTracks[trackNum].delay.delayNode.wetNode)
+    app.loopTracks[trackNum].delay.delayNode.feedbackNode.connect(app.loopTracks[trackNum].delay.delayNode.delayNode);
+    app.loopTracks[trackNum].delay.delayNode.input.connect(app.loopTracks[trackNum].delay.delayNode.delayNode);
+    app.loopTracks[trackNum].delay.delayNode.input.connect(app.loopTracks[trackNum].delay.delayNode.output);
 
 
 }
-app.reset = function(){
-    app.foo()
-    setTimeout(function(){app.bar()},100)
+app.reset = function(trackNum){
+    disconnectDelay(trackNum)
+    // app.bar()
+    setTimeout(function(){ reconnectDelay(trackNum) }, 100)
 }
 
 
@@ -202,12 +214,8 @@ var animateFrame = function(){
         beatBoxes[0].addClass('on')
         beatBoxes[15].removeClass('on')
     }
-    // if      ( ( progressInLoop > .00 ) && ( progressInLoop < .25 ) ) { $one.addClass('on'); $four.removeClass('on') }
-    // else if ( ( progressInLoop > .25 ) && ( progressInLoop < .50 ) ) { $two.addClass('on'); $one.removeClass('on') }
-    // else if ( ( progressInLoop > .50 ) && ( progressInLoop < .75 ) ) { $three.addClass('on'); $two.removeClass('on') }
-    // else if ( ( progressInLoop > .75 ) && ( progressInLoop < 1.0 ) ) { $four.addClass('on'); $three.removeClass('on') }
 
-    $metronome.css('transform', 'rotate(' + (( progressInBeat * 360 ) - 90 ) + 'deg)')
+    // $metronome.css('transform', 'rotate(' + (( progressInBeat * 360 ) - 90 ) + 'deg)')
 
     requestAnimationFrame(animateFrame)
 }
@@ -223,9 +231,6 @@ var logPitch = function(){
 ////////////////////////////////
 
 
-
-// var saw = new Wad({source:'sawtooth', volume : 2, env : { attack : .051, hold : 1.33, release : .3 }})
-// var triangle = new Wad({source:'triangle', volume : .2, env : { attack : .1, hold : .3, release : .3 }})
 Wad.midiInstrument = app.rig.alpha
 
 // using octave shift, so lowest note is [144, 60, 1]
@@ -437,24 +442,14 @@ var midiRig25 = function(event){
     }
 }
 
+
+/** A simple rig for a full-size piano-keyboard. **/
 var midiRig88 = function(event){
     console.log(event.receivedTime, event.data)
     if ( event.data[0] === 128 ) {
         Wad.midiInstrument.stop(Wad.pitchesArray[event.data[1]-12])
     }
     else if ( event.data[0] === 144 ) { // 144 means the midi message has note data
-        // console.log('note')
-        // if ( event.data[1] === 36 && event.data[2] > 0 ) { hat.play() }
-        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-        // else if ( event.data[1] === 40 && event.data[2] > 0 ) { snare.play() }
-        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
-        // else if ( event.data[1] === 38 && event.data[2] > 0 ) { kick.play() }
 
         if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
             console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
@@ -533,19 +528,24 @@ $(document).ready(function(){
     else { setTimeout(function(){ Wad.midiInputs[0].onmidimessage = midiRig88 }, 1000)}
 
     var looping = false
-    $(document).on('keydown', function(event){
-        // console.log(event)
-        if ( event.which === 49 ) {
-            looping = !looping
-            if ( looping ) { looper.add(mt); $('#record').addClass('selected') }
-            else if ( !looping ) {looper.remove(mt); $('#record').removeClass('selected') }
-                console.log(looping)
-        }
-        // else if ( event.which === 93 || event.which === 91 ) {
-        //     app.reset();
-        // }
-        if ( event.which >= 49 && event.which <= 56 ) { //for multi-track mixer
-            beta.play({env:{hold:.1}})
+    $(document).on('keydown', function(e){
+
+        if ( e.which >= 49 && e.which <= 56 ) { //for multi-track mixer
+            console.log(e.which - 49)
+            if ( app.recordingTo == null ) { // start recording to this track
+                app.recordingTo = e.which-49
+                app.loopTracks[e.which-49].add(app.soundSources)
+            }
+            else if ( (e.which-49) === app.recordingTo ) { // stop recording on this track
+                app.recordingTo = null
+                app.loopTracks[e.which-49].remove(app.soundSources)
+                app.preDest.add(app.soundSources)
+            }
+            else if ( (e.which-49) !== app.recordingTo ) { // stop recording on old track, start on this track
+                app.recordingTo = e.which-49
+                app.loopTracks[app.recordingTo].remove(app.soundSources)
+                app.loopTracks[e.which-49].add(app.soundSources)
+            }
         //     var $selectedTrack = $('.mixer-track:nth-child(' + (event.which - 48) + ')')
         //     if ( $selectedTrack.hasClass('selected') ) {
         //         $selectedTrack.removeClass('selected')
@@ -574,17 +574,6 @@ $(document).ready(function(){
     //     $(this).addClass('selected')
     // })
 
-    $('a[href*=#]:not([href=#])').click(function() {
-      if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-        var target = $(this.hash);
-        target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-        if (target.length) {
-          $('html,body').animate({
-            scrollTop: target.offset().top
-          }, 1000);
-          return false;
-        }
-      }
-    });
+
 
 })
