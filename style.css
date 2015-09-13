@@ -1,3 +1,14 @@
+body {
+    background-color: slategray;
+    /*padding: 20px;*/
+}
+h3 {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.container {
+    padding: 0;
+}
 .beatBox {
     display : inline-block;
     height : 50px;
@@ -11,19 +22,12 @@
     vertical-align: middle;
     background-color: rgb(110,150,120);
 }
-body {
-    background-color: slategray;
-    padding: 20px;
-}
 #controls {
     vertical-align: top;
 }
 
 #controls button {
-    border: 2px solid black;
     margin: 5px;
-    height: 40px;
-    width: 115px;
 }
 button:focus {
     outline:0;
@@ -43,10 +47,11 @@ button:focus {
     /*border: 2px solid black;*/
     padding: 15px;
 }
-.note, .mixer-track {
+.loop-track {
     display : inline-block;
-    height : 70px;
-    width : 90px;
+    height : 120px;
+    width : 130px;
+    max-width: 9vw;
     /*border : 3px solid black;*/
     /*text-align: center;*/
     /*vertical-align: middle;*/
@@ -59,7 +64,7 @@ button:focus {
 }
 
 .space {
-    height: 40px;
+    height: 30px;
 }
 
 #micInfo {
@@ -89,6 +94,10 @@ button:focus {
     margin-right: auto;
 }
 
+.recording {
+    color: red;
+}
+
 #metronome-container {
     height: 260px;
     width: 260px;
@@ -102,27 +111,68 @@ button:focus {
     transform: rotate(135deg);
     background-color: ghostwhite;
 }
-.spin {
-  -webkit-animation: spin .6666s infinite linear;
-  animation: spin .6666s infinite linear;
+
+.btn-round {
+    border-radius: 200px;
+    height: 110px;
+    width: 110px;
 }
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
+
+#controls .btn:focus, #controls .btn:active, #controls .btn:active:focus {
+    outline: none;
 }
-@keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
+
+#controls .btn:focus {
+    background-color: #fff;
+}
+#controls .btn-default:hover {
+    background-color: #e6e6e6;
+}
+
+
+.settings-modal input[type="range"] {
+    display: inline-block;
+    width: 80%;
+    margin-right: 5px;
+}
+.settings-modal label {
+    position: relative;
+    bottom: 3px;
+}
+
+.option-row {
+    height: 30px;
+}
+
+#configModal .short-select {
+    width: 151px;
+}
+#instrumentsModal .short-select {
+    width: 215px;
+}
+
+.option-row code {
+    vertical-align: sub;
+}
+
+.pad-top {
+    padding-top: 5px;
+}
+
+.settings-modal .modal-body {
+    max-height: 65vh;
+    overflow:scroll;
+}
+
+.drums-settings [type="range"] {
+    position: relative;
+    top: 2px;
+}
+
+#help span {
+    font-size: 100px;
+    font-weight: bold;
+    font-family: ariel;
+    position:relative;
+    bottom: 20px;
 }
