@@ -1,6 +1,6 @@
 app.init.midiRigs = function(app){
 
-    Wad.midiInstrument = app.instruments.piano
+    Wad.midiInstrument = app.instruments.alpha
 
 
     var midiRigs = {
@@ -207,8 +207,10 @@ app.init.midiRigs = function(app){
             }
         }
     }
-
-
+    // if ( Wad.midiInputs[1] ) { 
+    //     Wad.midiInputs[1].onmidimessage = midiRigs[app.rig] 
+    //     $('p#midi-detected').text('A connected MIDI device has been detected.')
+    // }
 
     if ( Wad.midiInputs[0] ) { 
         Wad.midiInputs[0].onmidimessage = midiRigs[app.rig] 
