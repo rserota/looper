@@ -16,18 +16,17 @@ app.init.dom = function(app){
             var progressInLoop = ( ( ( now - start ) % ( app.beatLen * beatsPerLoop ) ) / ( app.beatLen * beatsPerLoop ) )
             // console.log(Math.floor(progressInLoop / 0.0625) + 1)
             app.prevBeat = app.curBeat
-            app.curBeat = Math.floor(progressInLoop / ( 1/beatsPerLoop )) + 1
+            app.curBeat = Math.floor(progressInLoop / ( 1 / beatsPerLoop )) + 1
             if ( app.curBeat < app.prevBeat ) {
                 // console.log('fire!')
             }
-            if      ( Math.floor(progressInLoop / ( 1/beatsPerLoop )) > 0 ) {
-                $(app.$beatBoxes[ Math.floor(progressInLoop / ( 1/beatsPerLoop )) ]).addClass('on')
-                $(app.$beatBoxes[ Math.floor(progressInLoop / ( 1/beatsPerLoop )) - 1 ]).removeClass('on')
+            if      ( Math.floor(progressInLoop / ( 1 / beatsPerLoop )) > 0 ) {
+                $console.log(Math.floor(progressInLoop / ( 1 / beatsPerLoop )) ])
+                $console.log(app.$beatBoxes[ Math.floor(progressInLoop / ( 1 / beatsPerLoop )) - 1 ]).removeClass('on')
             }
-            else if ( Math.floor(progressInLoop / ( 1/beatsPerLoop )) === 0 ) {
+            else if ( Math.floor(progressInLoop / ( 1 / beatsPerLoop )) === 0 ) {
                 var end = app.$beatBoxes.length - 1
-                $(app.$beatBoxes[0]).addClass('on')
-                $(app.$beatBoxes[end]).removeClass('on')
+
             }
 
 
