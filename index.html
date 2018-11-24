@@ -18,8 +18,14 @@
                         v-for="n in beatsPerLoop" 
                         class="beat-box d-inline-block" 
                         v-bind:style="{width: beatBoxWidth}"
-                        v-bind:class="{'active-beat': curBeat == n}"
+                        v-bind:class="{'active-beat': ls.clock.curBeat == n}"
                     >{{n}}</div>
+                </div>
+
+                <div class="time-config">
+                    <label>Beat Length(ms)</label>
+                    <input v-model="ls.clock.beatLen">
+                    <input v-model="ls.sliders.beatLen" type="range" min="5" max="50" >
                 </div>
             </div>
 
