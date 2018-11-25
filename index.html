@@ -12,6 +12,7 @@
         <div id="vue-root">
             <div class="container">
                 <button @click="startClock">Start Clock</button>
+                <button @click="stopClock">Stop Clock</button>
 
                 <div class="beat-map">
                     <div 
@@ -24,8 +25,12 @@
 
                 <div class="time-config">
                     <label>Beat Length(ms)</label>
-                    <input v-model="ls.clock.beatLen">
+                    <input type="number" v-model="ls.clock.beatLen">
                     <input v-model="ls.sliders.beatLen" type="range" min="5" max="50" >
+                    <br>
+                    <input type="number" v-model="ls.clock.beatsPerBar">
+                    <br>
+                    <input type="number" v-model="ls.clock.barsPerLoop">
                 </div>
             </div>
 

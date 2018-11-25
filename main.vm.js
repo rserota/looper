@@ -19,6 +19,13 @@ var mainVm = new Vue({
 
     },
     created: function(){
+        var thatVm = this
+        window.addEventListener('beforeunload', function(){
+            localStorage.loopData = JSON.stringify(thatVm.ls)
+        })
+        if ( localStorage.loopData ) {
+            thatVm.ls = JSON.parse(localStorage.loopData)
+        }
     },
     computed: {
         beatBoxWidth: function(){
@@ -35,6 +42,11 @@ var mainVm = new Vue({
             }
             this.ls.clock.start = performance.now() + 1000
             this.animateFrame()
+        },
+        stopClock: function(){
+            if ( this.rafID ) {
+                cancelAnimationFrame(this.rafID)
+            }
         },
 
         animateFrame: function(){
