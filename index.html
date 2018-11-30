@@ -13,6 +13,8 @@
             <div class="container">
                 <button @click="startClock">Start Clock</button>
                 <button @click="stopClock">Stop Clock</button>
+                <button @click="resetApp">Reset App</button>
+
 
                 <div class="beat-map">
                     <div 
@@ -31,6 +33,57 @@
                     <input type="number" v-model="ls.clock.beatsPerBar">
                     <br>
                     <input type="number" v-model="ls.clock.barsPerLoop">
+                </div>
+
+                <div class="instrument-config">
+                    <div v-if="instruments.alpha" class="alpha">
+                        <label>Oscillator</label>
+                        <select v-model="ls.instruments.alpha.source">
+                            <option value="sine">Sine</option>
+                            <option value="triangle">Triangle</option>
+                            <option value="sawtooth">Sawtooth</option>
+                            <option value="square">Square</option>
+                        </select>
+                        <br>
+                        <button @click="play('alpha')">Test</button>
+                        <br>
+                        <label>Volume</label>
+                        <input v-model.number="instruments.alpha.defaultVolume" type="range" min="0" max="1" step=".05">
+                        <br>
+                        <label>Panning</label>
+                        <input v-model.number="instruments.alpha.panning.location" type="range" min="-1" max="1" step=".1">
+                        <hr>
+                        <br>
+                        <label>Attack</label>
+                        <input v-model.number="instruments.alpha.defaultEnv.attack" type="range" min="0" max="1" step=".1">
+                        <br>
+                        <label>Decay</label>
+                        <input v-model.number="instruments.alpha.defaultEnv.decay" type="range" min="0" max="1" step=".1">
+                        <br>
+                        <label>Sustain</label>
+                        <input v-model.number="instruments.alpha.defaultEnv.sustain" type="range" min="0" max="1" step=".1">
+                        <hr>
+                        <br>
+                        <label>Release</label>
+                        <input v-model.number="instruments.alpha.defaultEnv.release" type="range" min="0" max="1" step=".1">
+                        <hr>
+                        <label>Filter Type</label>
+                        <!-- <select v-model="instruments.alpha.filter[0].type"> -->
+                        <select >
+                            <option value="lowpass">Lowpass</option>
+                            <option value="lowpass">Highpass</option>
+                            <option value="lowpass">Bandpass</option>
+                            <option value="lowpass">Lowshelf</option>
+                            <option value="lowpass">Highshelf</option>
+                            <option value="lowpass">Peaking</option>
+                            <option value="lowpass">Notch</option>
+                            <option value="lowpass">Allpass</option>
+                        </select>
+                        <hr>
+                        <label>Filter Frequency</label>
+                        <input v-model.number="instruments.alpha.filter[0].frequency" type="range" min="0" max="6000" >
+                        
+                    </div>
                 </div>
             </div>
 

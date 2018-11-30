@@ -2357,10 +2357,15 @@ else {
     context = new audioContext();
 }
 var unlock = function(){
-    context.resume()
-    window.removeEventListener('mousemove', unlock)
-    window.removeEventListener('touchstart', unlock)
-    window.removeEventListener('touchend', unlock)
+    if ( context.state === 'suspended' ) {
+        context.resume()
+    }
+    else if ( context.state === 'running' ) {
+        console.log("The audio context is running.", context)
+        window.removeEventListener('mousemove', unlock)
+        window.removeEventListener('touchstart', unlock)
+        window.removeEventListener('touchend', unlock)
+    }
 }
 window.addEventListener('mousemove', unlock)
 window.addEventListener('touchstart', unlock)

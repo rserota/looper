@@ -14,18 +14,36 @@ var mainVm = new Vue({
             },
             sliders: {
                 beatLen: 20
+            },
+            instruments: {
+                alpha: {
+                    source:'square',
+                    filter  : {
+                        type      : 'lowpass', 
+                    },
+                },
+                beta: '4'
             }
         }, // (L)ocal (S)torage data
+        instruments : {
+            alpha: null,
+            beta : null,
+            gamma : null,
+            delta: null,
+            epsilon: null,
+        }
 
     },
     created: function(){
         var thatVm = this
-        window.addEventListener('beforeunload', function(){
-            localStorage.loopData = JSON.stringify(thatVm.ls)
-        })
-        if ( localStorage.loopData ) {
-            thatVm.ls = JSON.parse(localStorage.loopData)
-        }
+        window.addEventListener('beforeunload', thatVm.beforeunload)
+        // if ( localStorage.loopData ) {
+        //     thatVm.ls = JSON.parse(localStorage.loopData)
+        // }
+
+        thatVm.instruments.alpha = new Wad(thatVm.ls.instruments.alpha)
+
+
     },
     computed: {
         beatBoxWidth: function(){
@@ -36,6 +54,9 @@ var mainVm = new Vue({
         },
     },
     methods: {
+        beforeunload: function(){
+            localStorage.loopData = JSON.stringify(this.ls)
+        },
         startClock: function(){
             if ( this.rafID ) {
                 cancelAnimationFrame(this.rafID)
@@ -48,7 +69,14 @@ var mainVm = new Vue({
                 cancelAnimationFrame(this.rafID)
             }
         },
-
+        play: function(instrument){
+            this.instruments[instrument].play()
+        },
+        resetApp: function(){
+            localStorage.loopData = ''
+            window.removeEventListener('beforeunload', this.beforeunload)
+            window.location.reload()
+        },
         animateFrame: function(){
             var now = performance.now()
             var clock = this.ls.clock
