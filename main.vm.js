@@ -77,6 +77,10 @@ var mainVm = new Vue({
             window.removeEventListener('beforeunload', this.beforeunload)
             window.location.reload()
         },
+        changeSource: function(which, event){
+            console.log(mainVm.instruments[which].source) 
+            mainVm.instruments[which].source = event.target.value
+        },
         animateFrame: function(){
             var now = performance.now()
             var clock = this.ls.clock

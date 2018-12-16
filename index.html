@@ -38,7 +38,7 @@
                 <div class="instrument-config">
                     <div v-if="instruments.alpha" class="alpha">
                         <label>Oscillator</label>
-                        <select v-model="ls.instruments.alpha.source">
+                        <select v-on:change="changeSource('alpha', $event)" v-model="ls.instruments.alpha.source">
                             <option value="sine">Sine</option>
                             <option value="triangle">Triangle</option>
                             <option value="sawtooth">Sawtooth</option>
@@ -62,7 +62,6 @@
                         <br>
                         <label>Sustain</label>
                         <input v-model.number="instruments.alpha.defaultEnv.sustain" type="range" min="0" max="1" step=".1">
-                        <hr>
                         <br>
                         <label>Release</label>
                         <input v-model.number="instruments.alpha.defaultEnv.release" type="range" min="0" max="1" step=".1">
