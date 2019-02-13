@@ -15,11 +15,22 @@ var mainVm = new Vue({
             sliders: {
                 beatLen: 20
             },
+            knobs: { // keeps track of the last known position of the physical knobs on the keyboard
+                volume: 0,
+                pitchBend: 0,
+                modulation: 0,
+
+            },
             instruments: {
                 alpha: {
                     source:'square',
+                    env: {
+                        attack: .01,
+                        release: .3,
+                    },
                     filter  : {
                         type      : 'lowpass', 
+                        // env : { attack: .01 }
                     },
                 },
                 beta: '4'
@@ -40,9 +51,9 @@ var mainVm = new Vue({
         // if ( localStorage.loopData ) {
         //     thatVm.ls = JSON.parse(localStorage.loopData)
         // }
-
         thatVm.instruments.alpha = new Wad(thatVm.ls.instruments.alpha)
-
+        console.log(Wad.midiInputs)
+        Wad.midiInputs[0].onmidimessage = this.midiRig88
 
     },
     computed: {
@@ -54,6 +65,39 @@ var mainVm = new Vue({
         },
     },
     methods: {
+        midiRig88 : function(event){
+            // console.log(event.receivedTime, event.data)
+            var thatVm = this
+            if ( event.data[0] === 128 ) {
+                thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
+            }
+            else if ( event.data[0] === 144 ) { // 144 means the midi message has note data
+
+                if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
+                    // console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
+                    thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
+                }
+                else if ( event.data[2] > 0 ) {
+                    // console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
+                    var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+                    thatVm.instruments.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : thatVm.ls.knobs.detune, callback : function(that){
+                    }})
+                }
+            }
+            // else if ( event.data[0] === 176 ) { // 176 means the midi message has controller data
+            //     console.log('controller')
+            //     if ( event.data[1] == 64 ) {
+            //         if ( event.data[2] == 127 ) { looper.add(mt) ; console.log('on')}
+            //         else if ( event.data[2] == 0 ) { looper.remove(mt); console.log('off')}
+            //     }
+            // }
+            else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
+                console.log('pitch bend')
+                console.log( ( event.data[2] - 64 ) * ( 100 / 64 ) )
+                thatVm.instruments.alpha.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
+                thatVm.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+            }
+        },
         beforeunload: function(){
             localStorage.loopData = JSON.stringify(this.ls)
         },

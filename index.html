@@ -81,6 +81,11 @@
                         <hr>
                         <label>Filter Frequency</label>
                         <input v-model.number="instruments.alpha.filter[0].frequency" type="range" min="0" max="6000" >
+                        <br>
+                        <div v-if="instruments.alpha.filter[0].env">
+                            <label>Filter Attack</label>
+                            <input v-model.number="instruments.alpha.filter[0].env.attack" type="range" min="0" max="1" >
+                        </div>
                         
                     </div>
                 </div>
