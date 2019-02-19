@@ -34,26 +34,70 @@ var mainVm = new Vue({
                     },
                 },
                 beta: '4'
-            }
+            },
+            config: {
+                numLoopTracks: 7,
+            },
         }, // (L)ocal (S)torage data
-        instruments : {
-            alpha: null,
-            beta : null,
-            gamma : null,
-            delta: null,
-            epsilon: null,
-        }
+        instruments: { // individual wads, which cannot be serialized
+            alpha: null, // pianoish
+            beta : null, // bass
+            gamma : null, // synth
+            delta: null, // a drum kit. an array of wads
+            epsilon: null, // microphone
+        },
+        nodes: { // individual web audio nods, which cannot be serialized
+            preDest: null, 
+        },
+        loopTracks: [],
 
     },
     created: function(){
         var thatVm = this
-        window.addEventListener('beforeunload', thatVm.beforeunload)
+
         // if ( localStorage.loopData ) {
         //     thatVm.ls = JSON.parse(localStorage.loopData)
         // }
+
+        thatVm.nodes.preDest = new Wad.Poly()
+        console.log('loop?')
+        for ( var i=0; i < thatVm.ls.config.numLoopTracks; i++ ) {
+
+        console.log('loop!')
+            var loopTrack = new Wad.Poly({
+                delay : {
+                    delayTime: (thatVm.ls.clock.beatsPerBar * thatVm.ls.clock.barsPerLoop * thatVm.ls.clock.beatLen) / 1000,
+                    maxDelayTime: 40,
+                    feedback : 1,
+                    wet      : 1
+                },
+            })
+            var state = {
+                muted     : false, 
+                recording : false,
+                scheduled : { // state is scheduled to change to at the start of each loop
+                    muted     : false,
+                    recording : false,
+                }
+            }
+            thatVm.nodes.preDest.add(loopTrack)
+            thatVm.loopTracks.push({wad: loopTrack, state: state})
+        }
+
+        // instrument setup 
         thatVm.instruments.alpha = new Wad(thatVm.ls.instruments.alpha)
         console.log(Wad.midiInputs)
-        Wad.midiInputs[0].onmidimessage = this.midiRig88
+
+        // midi setup
+        if ( Wad.midiInputs[0] ) {
+            Wad.midiInputs[0].onmidimessage = this.midiRig88
+        }
+        else {
+            console.log("You're going to need a midi keyboard to use this app. ")
+        }
+        
+        // bind event handlers
+        window.addEventListener('beforeunload', thatVm.beforeunload)
 
     },
     computed: {
