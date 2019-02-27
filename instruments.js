@@ -150,9 +150,6 @@ app.init.instruments = function(app){
     app.instruments.gamma.pitchShiftCoarse = 0
 
     app.soundSources = new Wad.Poly({ 
-        // recConfig : { 
-        //     workerPath : '/src/Recorderjs/recorderWorker.js'
-        // },
         reverb : { 
             impulse :'/audio/widehall.wav',
             wet : .11

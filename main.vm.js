@@ -43,13 +43,18 @@ var mainVm = new Vue({
             alpha: null, // pianoish
             beta : null, // bass
             gamma : null, // synth
-            delta: null, // a drum kit. an array of wads
+            delta: {
+                kick: null,
+                snare: null,
+            }, // a drum kit. an array of wads
             epsilon: null, // microphone
         },
         nodes: { // individual web audio nods, which cannot be serialized
             preDest: null, 
+            soundSources: null,
         },
         loopTracks: [],
+        recordingTo: null,
 
     },
     created: function(){
@@ -59,11 +64,15 @@ var mainVm = new Vue({
         //     thatVm.ls = JSON.parse(localStorage.loopData)
         // }
 
+        // instrument setup 
+        thatVm.instruments.alpha = new Wad(thatVm.ls.instruments.alpha)
+
+
         thatVm.nodes.preDest = new Wad.Poly()
         console.log('loop?')
         for ( var i=0; i < thatVm.ls.config.numLoopTracks; i++ ) {
 
-        console.log('loop!')
+            console.log('loop!')
             var loopTrack = new Wad.Poly({
                 delay : {
                     delayTime: (thatVm.ls.clock.beatsPerBar * thatVm.ls.clock.barsPerLoop * thatVm.ls.clock.beatLen) / 1000,
@@ -84,9 +93,35 @@ var mainVm = new Vue({
             thatVm.loopTracks.push({wad: loopTrack, state: state})
         }
 
-        // instrument setup 
-        thatVm.instruments.alpha = new Wad(thatVm.ls.instruments.alpha)
-        console.log(Wad.midiInputs)
+        thatVm.nodes.soundSources = new Wad.Poly({ 
+            // reverb : { 
+            //     impulse :'/audio/widehall.wav',
+            //     wet : .11
+            // },
+            // delay   : {
+            //     delayTime : .3,  // Time in seconds between each delayed playback.
+            //     wet       : .1, // Relative volume change between the original sound and the first delayed playback.
+            //     feedback  : .45, // Relative volume change between each delayed playback and the next. 
+            // },
+    
+            callback : function(thatWad){
+                thatWad
+                    // .add(thatVm.instruments.delta.kick)
+                    // .add(thatVm.instruments.delta.closedHihat)
+                    // .add(thatVm.instruments.delta.openHihat)
+                    // .add(thatVm.instruments.delta.snare)
+                    // .add(thatVm.instruments.delta.cowbell)
+                    // .add(thatVm.instruments.delta.crash)
+                    // .add(thatVm.instruments.delta.highTom)
+                    // .add(thatVm.instruments.delta.midTom)
+                    // .add(thatVm.instruments.delta.lowTom)
+                    .add(thatVm.instruments.alpha)
+                    // .add(thatVm.instruments.beta)
+                    // .add(thatVm.instruments.gamma);
+                thatVm.nodes.preDest.add(thatWad)
+            }
+        })
+
 
         // midi setup
         if ( Wad.midiInputs[0] ) {
@@ -168,6 +203,33 @@ var mainVm = new Vue({
         changeSource: function(which, event){
             console.log(mainVm.instruments[which].source) 
             mainVm.instruments[which].source = event.target.value
+        },
+        recordToTrack : function(trackNum){
+            if ( thatVm.recordingTo == null ) { // start recording to this track
+                console.log('recording to track ', trackNum)
+                thatVm.recordingTo = trackNum
+                app.preDest.remove(app.soundSources)
+                thatVm.loopTracks[trackNum].add(app.soundSources)
+                thatVm.loopTracks[trackNum].state.recording = true;
+
+            }
+            else if ( thatVm.recordingTo === trackNum ) { // stop recording on this track
+                console.log('stopping recording to track ', trackNum)
+                thatVm.recordingTo = null
+                thatVm.loopTracks[trackNum].remove(app.soundSources)
+                app.preDest.add(app.soundSources)
+                thatVm.loopTracks[trackNum].state.recording = false;
+            }
+            else if ( app.recordingTo !== trackNum ) { // stop recording on old track, start on this track
+                console.log('stop rec on ', app.recordingTo, ', start on ', trackNum)
+                thatVm.loopTracks[thatVm.recordingTo].remove(app.soundSources)
+                thatVm.loopTracks[thatVm.recordingTo].state.recording = false;
+                app.trackActions.updateTrackDOM(thatVm.recordingTo)
+                thatVm.recordingTo = trackNum
+                thatVm.loopTracks[trackNum].add(app.soundSources)
+                thatVm.loopTracks[trackNum].state.recording = true;
+            }
+            app.trackActions.updateTrackDOM(trackNum)
         },
         animateFrame: function(){
             var now = performance.now()
