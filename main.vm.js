@@ -205,31 +205,31 @@ var mainVm = new Vue({
             mainVm.instruments[which].source = event.target.value
         },
         recordToTrack : function(trackNum){
+            var thatVm = this
             if ( thatVm.recordingTo == null ) { // start recording to this track
                 console.log('recording to track ', trackNum)
                 thatVm.recordingTo = trackNum
-                app.preDest.remove(app.soundSources)
-                thatVm.loopTracks[trackNum].add(app.soundSources)
+                thatVm.nodes.preDest.remove(thatVm.nodes.soundSources)
+                thatVm.loopTracks[trackNum].wad.add(thatVm.nodes.soundSources)
                 thatVm.loopTracks[trackNum].state.recording = true;
 
             }
             else if ( thatVm.recordingTo === trackNum ) { // stop recording on this track
                 console.log('stopping recording to track ', trackNum)
                 thatVm.recordingTo = null
-                thatVm.loopTracks[trackNum].remove(app.soundSources)
-                app.preDest.add(app.soundSources)
+                thatVm.loopTracks[trackNum].wad.remove(thatVm.nodes.soundSources)
+                thatVm.nodes.preDest.add(thatVm.nodes.soundSources)
                 thatVm.loopTracks[trackNum].state.recording = false;
             }
-            else if ( app.recordingTo !== trackNum ) { // stop recording on old track, start on this track
-                console.log('stop rec on ', app.recordingTo, ', start on ', trackNum)
-                thatVm.loopTracks[thatVm.recordingTo].remove(app.soundSources)
+            else if ( thatVm.recordingTo !== trackNum ) { // stop recording on old track, start on this track
+                console.log('stop rec on ', thatVm.recordingTo, ', start on ', trackNum)
+                thatVm.loopTracks[thatVm.recordingTo].wad.remove(thatVm.nodes.soundSources)
                 thatVm.loopTracks[thatVm.recordingTo].state.recording = false;
-                app.trackActions.updateTrackDOM(thatVm.recordingTo)
+                // app.trackActions.updateTrackDOM(thatVm.recordingTo)
                 thatVm.recordingTo = trackNum
-                thatVm.loopTracks[trackNum].add(app.soundSources)
+                thatVm.loopTracks[trackNum].wad.add(thatVm.nodes.soundSources)
                 thatVm.loopTracks[trackNum].state.recording = true;
             }
-            app.trackActions.updateTrackDOM(trackNum)
         },
         animateFrame: function(){
             var now = performance.now()
