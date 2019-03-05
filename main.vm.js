@@ -33,10 +33,16 @@ var mainVm = new Vue({
                         // env : { attack: .01 }
                     },
                 },
-                beta: '4'
+                beta: '4',
+                gamma: null,
+                delta: null,
+                epsilon: null,
+                metronome: null,
             },
             config: {
                 numLoopTracks: 7,
+                metronomeIsEnabled : true,
+                metronomeDuration: null, // how many measures to play the metronome for. Will play indefinitely if set to a falsey value
             },
         }, // (L)ocal (S)torage data
         instruments: { // individual wads, which cannot be serialized
@@ -48,11 +54,18 @@ var mainVm = new Vue({
                 snare: null,
             }, // a drum kit. an array of wads
             epsilon: null, // microphone
+            metronome: null, // probably a single closed hat
         },
-        nodes: { // individual web audio nods, which cannot be serialized
+        nodes: { // individual web audio nodes, which cannot be serialized
             preDest: null, 
             soundSources: null,
         },
+        hotkeys: {
+            record: false,
+            schedule: false,
+            delete: false,
+        },
+        loopTrackMidiKeys: [24, 26, 28, 29, 31, 33, 35], // the midi key codes for the keys to control the loop tracks
         loopTracks: [],
         recordingTo: null,
 
@@ -145,22 +158,47 @@ var mainVm = new Vue({
     },
     methods: {
         midiRig88 : function(event){
-            // console.log(event.receivedTime, event.data)
+            console.log(event, event.data)
             var thatVm = this
-            if ( event.data[0] === 128 ) {
-                thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
-            }
-            else if ( event.data[0] === 144 ) { // 144 means the midi message has note data
+            // if ( event.data[0] === 128 ) { // my 88key keyboard doesn't indicate stop this way
+            //     thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
+            // }
+            if ( event.data[0] === 144 ) { // 144 means the midi message has note data
 
-                if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
-                    // console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
-                    thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
+                if ( event.data[1] < 36 ) {
+                    // admin stuff
+                    console.log('do admin stuff')
+                    if ( event.data[1] === 23 ){
+                        if ( event.data[2] > 0 ) {
+                            console.log('record...')
+                            this.hotkeys.record = true
+                        }
+                        else if ( event.data[2] === 0 ) {
+                            this.hotkeys.record = false
+                        }
+                    }
+
+
+                    else if ( this.loopTrackMidiKeys.includes(event.data[1]) ) {
+                        console.log('a track key')
+                        if ( this.hotkeys.record  && event.data[2] > 0 ) {
+                            this.recordToTrack(this.loopTrackMidiKeys.indexOf(event.data[1]))
+                        }
+                    }
                 }
-                else if ( event.data[2] > 0 ) {
-                    // console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
-                    var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
-                    thatVm.instruments.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : thatVm.ls.knobs.detune, callback : function(that){
-                    }})
+                else if ( event.data[1] >= 36 ) {
+                    console.log('play notes')
+                    if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
+                        console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
+                        thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
+                    }
+                    else if ( event.data[2] > 0 ) {
+                        console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
+                        var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+                        thatVm.instruments.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : thatVm.ls.knobs.detune, callback : function(that){
+                        }})
+                    }
+
                 }
             }
             // else if ( event.data[0] === 176 ) { // 176 means the midi message has controller data
@@ -248,7 +286,9 @@ var mainVm = new Vue({
                 }
                 if ( clock.curBeat != clock.prevBeat ) {
                     console.log('beat!',clock.curBeat)
-                    tick.play()
+                    if ( this.ls.config.metronomeIsEnabled ) {
+                        tick.play()
+                    }
                 }
                 if      ( Math.floor(progressInLoop / ( 1 / beatsPerLoop )) > 0 ) {
                     // console.log(Math.floor(progressInLoop / ( 1 / beatsPerLoop )) )
