@@ -2,6 +2,9 @@ body {
     background-color: slategray;
     /*padding: 20px;*/
 }
+[v-cloak] {
+    display: none;
+}
 h3 {
     margin-top: 15px;
     margin-bottom: 15px;

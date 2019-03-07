@@ -44,6 +44,7 @@ var mainVm = new Vue({
                 metronomeIsEnabled : true,
                 metronomeDuration: null, // how many measures to play the metronome for. Will play indefinitely if set to a falsey value
             },
+            currentTab: 'instruments'
         }, // (L)ocal (S)torage data
         instruments: { // individual wads, which cannot be serialized
             alpha: null, // pianoish
@@ -214,6 +215,10 @@ var mainVm = new Vue({
                 thatVm.instruments.alpha.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
                 thatVm.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
             }
+        },
+        openTab: function(which){
+            console.log(which)
+            this.ls.currentTab = which
         },
         beforeunload: function(){
             localStorage.loopData = JSON.stringify(this.ls)
