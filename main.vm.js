@@ -36,7 +36,25 @@ var mainVm = new Vue({
                 beta: '4',
                 gamma: null,
                 delta: null,
-                epsilon: null,
+                epsilon: { 
+                    source : 'mic',
+                    // filter : {
+                    //     type : 'highpass',
+                    //     frequency : 900
+                    // },
+                    // delay : {
+                    //     delayTime: 1,
+                    //     maxDelayTime: 20,
+                    //     feedback : 1,
+                    //     wet      : 1
+                    // },
+                    panning: 0,
+                    // reverb : { 
+                    //     impulse :'http://localhost:8000/widehall.wav',
+                    //     wet : .21
+                    // },
+            
+                },
                 metronome: null,
             },
             config: {
@@ -81,6 +99,7 @@ var mainVm = new Vue({
         // instrument setup 
         thatVm.instruments.alpha = new Wad(thatVm.ls.instruments.alpha)
 
+        thatVm.instruments.epsilon = new Wad(thatVm.ls.instruments.epsilon)
 
         thatVm.nodes.preDest = new Wad.Poly()
         console.log('loop?')
@@ -132,6 +151,8 @@ var mainVm = new Vue({
                     .add(thatVm.instruments.alpha)
                     // .add(thatVm.instruments.beta)
                     // .add(thatVm.instruments.gamma);
+                    // .add(thatVm.instruments.gamma);
+                    .add(thatVm.instruments.epsilon);
                 thatVm.nodes.preDest.add(thatWad)
             }
         })
