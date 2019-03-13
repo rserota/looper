@@ -81,16 +81,15 @@
                                 <input v-model.number="instruments.alpha.defaultEnv.release" type="range" min="0" max="1" step=".1">
                                 <hr>
                                 <label>Filter Type</label>
-                                <!-- <select v-model="instruments.alpha.filter[0].type"> -->
-                                <select >
+                                <select v-model="instruments.alpha.filter[0].type">
                                     <option value="lowpass">Lowpass</option>
-                                    <option value="lowpass">Highpass</option>
-                                    <option value="lowpass">Bandpass</option>
-                                    <option value="lowpass">Lowshelf</option>
-                                    <option value="lowpass">Highshelf</option>
-                                    <option value="lowpass">Peaking</option>
-                                    <option value="lowpass">Notch</option>
-                                    <option value="lowpass">Allpass</option>
+                                    <option value="highpass">Highpass</option>
+                                    <option value="bandpass">Bandpass</option>
+                                    <option value="lowshelf">Lowshelf</option>
+                                    <option value="highshelf">Highshelf</option>
+                                    <option value="peaking">Peaking</option>
+                                    <option value="notch">Notch</option>
+                                    <option value="allpass">Allpass</option>
                                 </select>
                                 <hr>
                                 <label>Filter Frequency</label>
@@ -114,9 +113,33 @@
                     <a class="" data-toggle="collapse" href="#collapseKeys" role="button" aria-expanded="false" aria-controls="collapseKeys">
                         <h2>Drums</h2>
                     </a>
-                    <a class="" data-toggle="collapse" href="#collapseKeys" role="button" aria-expanded="false" aria-controls="collapseKeys">
+                    <a class="" data-toggle="collapse" href="#collapseMicrophone" role="button" aria-expanded="false" aria-controls="collapseKeys">
                         <h2>Microphone</h2>
                     </a>
+                    <div class="collapse" id="collapseMicrophone">
+                        <div class="card card-body">
+                            <div v-if="instruments.epsilon" class="epsilon"></div>
+                                <div v-if="instruments.epsilon.filter">
+                                    <label>Filter Type</label>
+                                    <select  v-model="instruments.epsilon.filter[0].type">
+                                        <option value="lowpass">Lowpass</option>
+                                        <option value="highpass">Highpass</option>
+                                        <option value="bandpass">Bandpass</option>
+                                        <option value="lowshelf">Lowshelf</option>
+                                        <option value="highshelf">Highshelf</option>
+                                        <option value="peaking">Peaking</option>
+                                        <option value="notch">Notch</option>
+                                        <option value="allpass">Allpass</option>
+                                    </select>
+                                    <hr>
+                                    <label>Filter Frequency</label>
+                                    <input v-model.number="instruments.epsilon.filter[0].frequency" type="range" min="0" max="6000" >
+
+                                </div>
+                            
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

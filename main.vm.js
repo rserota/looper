@@ -38,10 +38,10 @@ var mainVm = new Vue({
                 delta: null,
                 epsilon: { 
                     source : 'mic',
-                    // filter : {
-                    //     type : 'highpass',
-                    //     frequency : 900
-                    // },
+                    filter : {
+                        type : 'highpass',
+                        frequency : 900
+                    },
                     // delay : {
                     //     delayTime: 1,
                     //     maxDelayTime: 20,
