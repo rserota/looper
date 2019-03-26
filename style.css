@@ -9,6 +9,20 @@ h3 {
     margin-top: 15px;
     margin-bottom: 15px;
 }
+
+h2 {
+    color: black;
+    transition: all 1s;
+    margin-bottom: 0;
+}
+
+h2:hover {
+    border-bottom: 3px solid black;
+}
+
+a:hover {
+    text-decoration: none;
+}
 .container {
     padding: 0;
 }

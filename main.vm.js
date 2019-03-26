@@ -57,6 +57,7 @@ var mainVm = new Vue({
                 },
                 metronome: null,
             },
+            activeInstrument: 'alpha',
             config: {
                 numLoopTracks: 7,
                 metronomeIsEnabled : true,
@@ -85,6 +86,7 @@ var mainVm = new Vue({
             delete: false,
         },
         loopTrackMidiKeys: [24, 26, 28, 29, 31, 33, 35], // the midi key codes for the keys to control the loop tracks
+        instrumentMidiKeys: [25, 27, 30, 32, 34],
         loopTracks: [],
         recordingTo: null,
 
@@ -207,6 +209,28 @@ var mainVm = new Vue({
                             this.recordToTrack(this.loopTrackMidiKeys.indexOf(event.data[1]))
                         }
                     }
+
+                    // SWITCHING INSTRUMENTS
+                    else if ( this.instrumentMidiKeys.includes(event.data[1]) ) {
+                        console.log('switch instruments')
+                        if      ( event.data[1] == this.instrumentMidiKeys[0] ) {
+                            this.switchInstruments('alpha')
+                        }
+                        else if ( event.data[1] == this.instrumentMidiKeys[1] ) {
+                            this.ls.activeInstrument = 'beta'
+                        }
+                        else if ( event.data[1] == this.instrumentMidiKeys[2] ) {
+                            this.ls.activeInstrument = 'gamma'
+                        }
+                        else if ( event.data[1] == this.instrumentMidiKeys[3] ) {
+                            this.ls.activeInstrument = 'delta'
+                        }
+                        else if ( event.data[1] == this.instrumentMidiKeys[4] ) {
+                            this.switchInstruments('epsilon')
+
+                        }
+                    }
+                    // END SWITCHING INSTRUMENTS
                 }
                 else if ( event.data[1] >= 36 ) {
                     console.log('play notes')
@@ -236,6 +260,21 @@ var mainVm = new Vue({
                 thatVm.instruments.alpha.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
                 thatVm.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
             }
+        },
+        switchInstruments: function(instrument){
+            if ( this.ls.activeInstrument == instrument ) {
+                console.log("Can't switch to the same instrument.")
+                return
+            }
+            this.ls.activeInstrument = instrument
+            if ( instrument == 'epsilon' ) {
+                this.instruments.epsilon.play()
+            }
+            else {
+                // but how do we keep the mic on while playing other instruments?
+                this.instruments.epsilon.stop()
+            }
+
         },
         openTab: function(which){
             console.log(which)
