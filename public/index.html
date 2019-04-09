@@ -86,26 +86,28 @@
                                 <input v-model.number="instruments.alpha.defaultEnv.release" type="range" min="0" max="1" step=".1">
                                 <input v-model.number="instruments.alpha.defaultEnv.release" >
                                 <hr>
-                                <label>Filter Type</label>
-                                <select v-model="instruments.alpha.filter[0].type">
-                                    <option value="lowpass">Lowpass</option>
-                                    <option value="highpass">Highpass</option>
-                                    <option value="bandpass">Bandpass</option>
-                                    <option value="lowshelf">Lowshelf</option>
-                                    <option value="highshelf">Highshelf</option>
-                                    <option value="peaking">Peaking</option>
-                                    <option value="notch">Notch</option>
-                                    <option value="allpass">Allpass</option>
-                                </select>
-                                <hr>
-                                <label>Filter Frequency</label>
-                                <input v-model.number="instruments.alpha.filter[0].frequency" type="range" min="0" max="6000" >
-                                <input v-model.number="instruments.alpha.filter[0].frequency" >
-                                <br>
-                                <div v-if="instruments.alpha.filter[0].env">
-                                    <label>Filter Attack</label>
-                                    <input v-model.number="instruments.alpha.filter[0].env.attack" type="range" min="0" max="1" >
-                                    <input v-model.number="instruments.alpha.filter[0].env.attack" >
+                                <div v-if="instruments.alpha.filter">
+                                    <label>Filter Type</label>
+                                    <select v-model="instruments.alpha.filter[0].type">
+                                        <option value="lowpass">Lowpass</option>
+                                        <option value="highpass">Highpass</option>
+                                        <option value="bandpass">Bandpass</option>
+                                        <option value="lowshelf">Lowshelf</option>
+                                        <option value="highshelf">Highshelf</option>
+                                        <option value="peaking">Peaking</option>
+                                        <option value="notch">Notch</option>
+                                        <option value="allpass">Allpass</option>
+                                    </select>
+                                    <hr>
+                                    <label>Filter Frequency</label>
+                                    <input v-model.number="instruments.alpha.filter[0].frequency" type="range" min="0" max="6000" >
+                                    <input v-model.number="instruments.alpha.filter[0].frequency" >
+                                    <br>
+                                    <div v-if="instruments.alpha.filter[0].env">
+                                        <label>Filter Attack</label>
+                                        <input v-model.number="instruments.alpha.filter[0].env.attack" type="range" min="0" max="1" >
+                                        <input v-model.number="instruments.alpha.filter[0].env.attack" >
+                                    </div>
                                 </div>
                                 
                             </div>

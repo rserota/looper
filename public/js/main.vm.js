@@ -23,13 +23,14 @@ var mainVm = new Vue({
             },
             instruments: {
                 alpha: {
-                    source:'square',
+                    source:'sawtooth',
                     env: {
                         attack: .01,
                         release: .3,
                     },
                     filter  : {
                         type      : 'lowpass', 
+                        frequency : 300,
                         // env : { attack: .01 }
                     },
                 },
