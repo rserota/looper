@@ -44,13 +44,13 @@
                 </div>
 
                 <div v-if="ls.currentTab == 'instruments'" class="instrument-config">
+
                     <a class="" data-toggle="collapse" href="#collapseKeys" role="button" aria-expanded="false" aria-controls="collapseKeys">
                         <h2>Keys</h2>
                     </a>
-
-                    <div class="collapse" id="collapseKeys">
-                        <div class="card card-body">
-                            <div v-if="instruments.alpha" class="alpha">
+                    <div class="collapse bordered alpha " id="collapseKeys">
+                        <div class="p-3">
+                            <div v-if="instruments.alpha" class="">
                                 <label>Oscillator</label>
                                 <select v-on:change="changeSource('alpha', $event)" v-model="ls.instruments.alpha.source">
                                     <option value="sine">Sine</option>
@@ -114,20 +114,39 @@
                         
                         </div>
                     </div>
-                    <a class="" data-toggle="collapse" href="#collapseKeys" role="button" aria-expanded="false" aria-controls="collapseKeys">
+
+                    <a class="" data-toggle="collapse" href="#collapseBass" role="button" aria-expanded="false" aria-controls="collapseBass">
                         <h2>Bass</h2>
                     </a>
-                    <a class="" data-toggle="collapse" href="#collapseKeys" role="button" aria-expanded="false" aria-controls="collapseKeys">
+                    <div class="collapse bordered beta " id="collapseBass">
+                        <div class="p-3">
+                            <span>hi</span>
+                        </div>
+                    </div>
+
+                    <a class="" data-toggle="collapse" href="#collapseSynth" role="button" aria-expanded="false" aria-controls="collapseKeys">
                         <h2>Synth</h2>
                     </a>
-                    <a class="" data-toggle="collapse" href="#collapseKeys" role="button" aria-expanded="false" aria-controls="collapseKeys">
+                    <div class="collapse bordered gamma " id="collapseSynth">
+                        <div class="p-3">
+                            <span>hi</span>
+                        </div>
+                    </div>
+
+                    <a class="" data-toggle="collapse" href="#collapseDrums" role="button" aria-expanded="false" aria-controls="collapseKeys">
                         <h2>Drums</h2>
                     </a>
-                    <a class="" data-toggle="collapse" href="#collapseMicrophone" role="button" aria-expanded="false" aria-controls="collapseKeys">
+                    <div class="collapse bordered delta " id="collapseDrums">
+                        <div class="p-3">
+                            <span>hi</span>
+                        </div>
+                    </div>
+
+                    <a class="" data-toggle="collapse" href="#collapseMicrophone" role="button" aria-expanded="false" aria-controls="collapseMicrophone">
                         <h2>Microphone</h2>
                     </a>
-                    <div class="collapse" id="collapseMicrophone">
-                        <div class="card card-body">
+                    <div class="collapse bordered epsilon " id="collapseMicrophone">
+                        <div class="p-3">
                             <div v-if="instruments.epsilon" class="epsilon"></div>
                                 <div v-if="instruments.epsilon.filter">
                                     <label>Filter Type</label>

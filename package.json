@@ -7,13 +7,15 @@
     "client-sessions": "^0.8.0",
     "compression": "^1.7.3",
     "express": "^4.16.4",
-    "stylus": "^0.54.5"
+    "stylus": "^0.54.5",
+    "watch": "^1.0.2"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "build-styles": "./node_modules/stylus/bin/stylus -c ./public/stylus --out ./public/css"
+    "build-styles": "./node_modules/stylus/bin/stylus -c ./public/stylus --out ./public/css",
+    "watch": "./node_modules/watch/cli.js 'npm run build-styles' ./public/stylus"
   },
   "repository": {
     "type": "git",

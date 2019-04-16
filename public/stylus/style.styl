@@ -16,13 +16,9 @@ h2 {
     color: black;
     transition: all .3s;
     margin-bottom: 0;
-    border-bottom: 0px solid $white;
+    // border-bottom: 0px solid $white;
 }
 
-h2:hover {
-    border-bottom: 3px solid $white;
-    transition: all .5s;
-}
 
 a:hover {
     text-decoration: none;
@@ -74,4 +70,37 @@ button:focus {
 }
 .active-beat {
     background-color: red;
+}
+
+.bordered {
+    border-left: 3px solid $black;
+    border-top: 3px solid $black;
+    border-bottom: 3px solid $black;
+    border-right: 3px solid $black;
+}
+
+.alpha {
+    background-color: $alpha;
+    color: $alpha-text;
+}
+a[aria-expanded="false"] h2:hover {
+    border-bottom: 3px solid $black;
+    transition: all .5s;
+}
+
+.beta {
+    background-color: $beta;
+    color: $beta-text;
+}
+.gamma {
+    background-color: $gamma;
+    color: $gamma-text;
+}
+.delta {
+    background-color: $delta;
+    color: $delta-text;
+}
+.epsilon {
+    background-color: $epsilon;
+    color: $epsilon-text;
 }
