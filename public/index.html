@@ -11,7 +11,7 @@
     <body id="home">
         <div id="vue-root">
             <nav class="navbar navbar-dark bg-dark mb-4">
-                <a class="navbar-brand" href="#">Fixed top</a>
+                <button @click="openTab('performance')" class="btn btn-link">Performance</button>
                 <button @click="openTab('instruments')" class="btn btn-link">Instruments</button>
                 <button @click="openTab('time')" class="btn btn-link">Time</button>
             </nav>
@@ -20,15 +20,6 @@
         
 
                 
-
-                <div class="beat-map">
-                    <div 
-                        v-for="n in beatsPerLoop" 
-                        class="beat-box d-inline-block" 
-                        v-bind:style="{width: beatBoxWidth}"
-                        v-bind:class="{'active-beat': ls.clock.curBeat == n}"
-                    >{{n}}</div>
-                </div>
 
                 <div v-if="ls.currentTab == 'time'" class="time-config">
                     <button @click="startClock">Start Clock</button>
@@ -147,7 +138,7 @@
                     </a>
                     <div class="collapse bordered epsilon " id="collapseMicrophone">
                         <div class="p-3">
-                            <div v-if="instruments.epsilon" class="epsilon"></div>
+                            <div v-if="instruments.epsilon" class="epsilon">
                                 <div v-if="instruments.epsilon.filter">
                                     <label>Filter Type</label>
                                     <select  v-model="instruments.epsilon.filter[0].type">
@@ -169,6 +160,21 @@
                             
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div v-if="ls.currentTab == 'performance'" class="performance">
+
+                    <div class="beat-map">
+                        <div 
+                            v-for="n in beatsPerLoop" 
+                            class="beat-box d-inline-block" 
+                            v-bind:style="{width: beatBoxWidth}"
+                            v-bind:class="{'active-beat': ls.clock.curBeat == n}"
+                        >{{n}}</div>
+                    </div>
+                    <div v-for="loopTrack in loopTracks">
+                        <marquee>Voluuuume!</marquee>
                     </div>
                 </div>
             </div>
