@@ -221,7 +221,7 @@ return /******/ (function(modules) { // webpackBootstrap
             return new Tuna(context);
         }
 
-        var _window = typeof window === 'undefined' ? {} : window;
+        var _window = typeof window === "undefined" ? {} : window;
 
         if (!_window.AudioContext) {
             _window.AudioContext = _window.webkitAudioContext;
@@ -341,7 +341,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
         this.bits = properties.bits || this.defaults.bits.value;
         this.normfreq = initValue(properties.normfreq, this.defaults.normfreq.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Bitcrusher.prototype = Object.create(Super, {
         name: {
@@ -412,8 +412,8 @@ return /******/ (function(modules) { // webpackBootstrap
         this.convolver.output.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
 
-        this.makeupGain = initValue(properties.makeupGain, this.defaults.makeupGain);
-        this.bypass = properties.bypass || false;
+        this.makeupGain = initValue(properties.makeupGain, this.defaults.makeupGain.value);
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Cabinet.prototype = Object.create(Super, {
         name: {
@@ -442,7 +442,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.makeupNode.gain;
             },
             set: function(value) {
-                this.makeupNode.gain.value = value;
+                this.makeupNode.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         newConvolver: {
@@ -500,7 +500,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.attenuator.gain.value = 0.6934; // 1 / (10 ^ (((20 * log10(3)) / 3) / 20))
         this.lfoL.activate(true);
         this.lfoR.activate(true);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Chorus.prototype = Object.create(Super, {
         name: {
@@ -574,8 +574,8 @@ return /******/ (function(modules) { // webpackBootstrap
             },
             set: function(value) {
                 this._feedback = value;
-                this.feedbackGainNodeLR.gain.value = this._feedback;
-                this.feedbackGainNodeRL.gain.value = this._feedback;
+                this.feedbackGainNodeLR.gain.setTargetAtTime(this._feedback, userContext.currentTime, 0.01);
+                this.feedbackGainNodeRL.gain.setTargetAtTime(this._feedback, userContext.currentTime, 0.01);
             }
         },
         rate: {
@@ -610,7 +610,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.attack = initValue(properties.attack, this.defaults.attack.value);
         this.ratio = properties.ratio || this.defaults.ratio.value;
         this.knee = initValue(properties.knee, this.defaults.knee.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Compressor.prototype = Object.create(Super, {
         name: {
@@ -744,7 +744,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.makeupNode.gain;
             },
             set: function(value) {
-                this.makeupNode.gain.value = dbToWAVolume(value);
+                this.makeupNode.gain.setTargetAtTime(dbToWAVolume(value), userContext.currentTime, 0.01);
             }
         }
     });
@@ -778,7 +778,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.level = initValue(properties.level, this.defaults.level.value);
         this.filterHigh.type = "lowpass";
         this.filterLow.type = "highpass";
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Convolver.prototype = Object.create(Super, {
         name: {
@@ -821,6 +821,11 @@ return /******/ (function(modules) { // webpackBootstrap
                     max: 1,
                     automatable: true,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -829,7 +834,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.filterLow.frequency;
             },
             set: function(value) {
-                this.filterLow.frequency.value = value;
+                this.filterLow.frequency.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         highCut: {
@@ -837,7 +842,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.filterHigh.frequency;
             },
             set: function(value) {
-                this.filterHigh.frequency.value = value;
+                this.filterHigh.frequency.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         level: {
@@ -845,7 +850,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.output.gain;
             },
             set: function(value) {
-                this.output.gain.value = value;
+                this.output.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         dryLevel: {
@@ -853,7 +858,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.dry.gain;
             },
             set: function(value) {
-                this.dry.gain.value = value;
+                this.dry.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         wetLevel: {
@@ -861,7 +866,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.wet.gain;
             },
             set: function(value) {
-                this.wet.gain.value = value;
+                this.wet.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         buffer: {
@@ -922,7 +927,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.dryLevel = initValue(properties.dryLevel, this.defaults.dryLevel.value);
         this.cutoff = properties.cutoff || this.defaults.cutoff.value;
         this.filter.type = "lowpass";
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Delay.prototype = Object.create(Super, {
         name: {
@@ -965,6 +970,11 @@ return /******/ (function(modules) { // webpackBootstrap
                     max: 1,
                     automatable: true,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -983,7 +993,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.wet.gain;
             },
             set: function(value) {
-                this.wet.gain.value = value;
+                this.wet.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         dryLevel: {
@@ -992,7 +1002,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.dry.gain;
             },
             set: function(value) {
-                this.dry.gain.value = value;
+                this.dry.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         feedback: {
@@ -1001,7 +1011,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.feedbackNode.gain;
             },
             set: function(value) {
-                this.feedbackNode.gain.value = value;
+                this.feedbackNode.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         cutoff: {
@@ -1010,7 +1020,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.filter.frequency;
             },
             set: function(value) {
-                this.filter.frequency.value = value;
+                this.filter.frequency.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         }
     });
@@ -1031,7 +1041,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.Q = properties.resonance || this.defaults.Q.value;
         this.filterType = initValue(properties.filterType, this.defaults.filterType.value);
         this.gain = initValue(properties.gain, this.defaults.gain.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Filter.prototype = Object.create(Super, {
         name: {
@@ -1097,7 +1107,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.filter.gain;
             },
             set: function(value) {
-                this.filter.gain.value = value;
+                this.filter.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         frequency: {
@@ -1106,7 +1116,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.filter.frequency;
             },
             set: function(value) {
-                this.filter.frequency.value = value;
+                this.filter.frequency.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         }
     });
@@ -1125,7 +1135,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.gainNode.connect(this.output);
 
         this.gain = initValue(properties.gain, this.defaults.gain.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Gain.prototype = Object.create(Super, {
         name: {
@@ -1152,7 +1162,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 return this.gainNode.gain;
             },
             set: function(value) {
-                this.gainNode.gain.value = value;
+                this.gainNode.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         }
     });
@@ -1175,10 +1185,10 @@ return /******/ (function(modules) { // webpackBootstrap
         in1 = in2 = in3 = in4 = out1 = out2 = out3 = out4 = 0.0;
         var input, output, f, fb, i, length, inputFactor;
         this.processor.onaudioprocess = function(e) {
-            input = e.inputBuffer.getChannelData(0),
-                output = e.outputBuffer.getChannelData(0),
-                f = this.cutoff * 1.16,
-                inputFactor = 0.35013 * (f * f) * (f * f);
+            input = e.inputBuffer.getChannelData(0);
+            output = e.outputBuffer.getChannelData(0);
+            f = this.cutoff * 1.16;
+            inputFactor = 0.35013 * (f * f) * (f * f);
             fb = this.resonance * (1.0 - 0.15 * f * f);
             length = input.length;
             for (i = 0; i < length; i++) {
@@ -1198,7 +1208,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
         this.cutoff = initValue(properties.cutoff, this.defaults.cutoff.value);
         this.resonance = initValue(properties.resonance, this.defaults.resonance.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.MoogFilter.prototype = Object.create(Super, {
         name: {
@@ -1276,7 +1286,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.outputGain = initValue(properties.outputGain, this.defaults.outputGain.value);
         this.curveAmount = initValue(properties.curveAmount, this.defaults.curveAmount.value);
         this.algorithmIndex = initValue(properties.algorithmIndex, this.defaults.algorithmIndex.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Overdrive.prototype = Object.create(Super, {
         name: {
@@ -1294,9 +1304,9 @@ return /******/ (function(modules) { // webpackBootstrap
                     scaled: true
                 },
                 outputGain: {
-                    value: 1,
-                    min: 0,
-                    max: 1,
+                    value: 0,
+                    min: -46,
+                    max: 0,
                     automatable: true,
                     type: FLOAT,
                     scaled: true
@@ -1314,6 +1324,11 @@ return /******/ (function(modules) { // webpackBootstrap
                     max: 5,
                     automatable: false,
                     type: INT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -1347,6 +1362,7 @@ return /******/ (function(modules) { // webpackBootstrap
             },
             set: function(value) {
                 this._outputGain = dbToWAVolume(value);
+                this.outputDrive.gain.setValueAtTime(this._outputGain, userContext.currentTime, 0.01);
             }
         },
         algorithmIndex: {
@@ -1438,7 +1454,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.panner.connect(this.output);
 
         this.pan = initValue(properties.pan, this.defaults.pan.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Panner.prototype = Object.create(Super, {
         name: {
@@ -1523,7 +1539,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
         this.lfoL.activate(true);
         this.lfoR.activate(true);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Phaser.prototype = Object.create(Super, {
         name: {
@@ -1569,6 +1585,11 @@ return /******/ (function(modules) { // webpackBootstrap
                     max: 1500,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -1608,7 +1629,7 @@ return /******/ (function(modules) { // webpackBootstrap
                 this._baseModulationFrequency = value;
                 this.lfoL.offset = this._baseModulationFrequency;
                 this.lfoR.offset = this._baseModulationFrequency;
-                this._depth = this._depth;
+                this.depth = this._depth;
             }
         },
         feedback: {
@@ -1617,8 +1638,8 @@ return /******/ (function(modules) { // webpackBootstrap
             },
             set: function(value) {
                 this._feedback = value;
-                this.feedbackGainNodeL.gain.value = this._feedback;
-                this.feedbackGainNodeR.gain.value = this._feedback;
+                this.feedbackGainNodeL.gain.setTargetAtTime(this._feedback, userContext.currentTime, 0.01);
+                this.feedbackGainNodeR.gain.setTargetAtTime(this._feedback, userContext.currentTime, 0.01);
             }
         },
         stereoPhase: {
@@ -1639,7 +1660,7 @@ return /******/ (function(modules) { // webpackBootstrap
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
-        this.wetLevel = userContext.createGain();
+        this.wet = userContext.createGain();
         this.stereoToMonoMix = userContext.createGain();
         this.feedbackLevel = userContext.createGain();
         this.output = userContext.createGain();
@@ -1654,9 +1675,9 @@ return /******/ (function(modules) { // webpackBootstrap
         this.splitter.connect(this.stereoToMonoMix, 0, 0);
         this.splitter.connect(this.stereoToMonoMix, 1, 0);
         this.stereoToMonoMix.gain.value = .5;
-        this.stereoToMonoMix.connect(this.wetLevel);
-        this.wetLevel.connect(this.delayLeft);
-        this.feedbackLevel.connect(this.delayLeft);
+        this.stereoToMonoMix.connect(this.wet);
+        this.wet.connect(this.delayLeft);
+        this.feedbackLevel.connect(this.wet);
         this.delayLeft.connect(this.delayRight);
         this.delayRight.connect(this.feedbackLevel);
         this.delayLeft.connect(this.merger, 0, 0);
@@ -1667,8 +1688,8 @@ return /******/ (function(modules) { // webpackBootstrap
         this.delayTimeLeft = properties.delayTimeLeft !== undefined ? properties.delayTimeLeft : this.defaults.delayTimeLeft.value;
         this.delayTimeRight = properties.delayTimeRight !== undefined ? properties.delayTimeRight : this.defaults.delayTimeRight.value;
         this.feedbackLevel.gain.value = properties.feedback !== undefined ? properties.feedback : this.defaults.feedback.value;
-        this.wetLevel.gain.value = properties.wetLevel !== undefined ? properties.wetLevel : this.defaults.wetLevel.value;
-        this.bypass = properties.bypass || false;
+        this.wet.gain.value = properties.wetLevel !== undefined ? properties.wetLevel : this.defaults.wetLevel.value;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.PingPongDelay.prototype = Object.create(Super, {
         name: {
@@ -1694,6 +1715,24 @@ return /******/ (function(modules) { // webpackBootstrap
                 this.delayRight.delayTime.value = value / 1000;
             }
         },
+        wetLevel: {
+            enumerable: true,
+            get: function () {
+                return this.wet.gain;
+            },
+            set: function (value) {
+                this.wet.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
+            }
+        }, 
+        feedback: {
+            enumerable: true,
+            get: function () {
+                return this.feedbackLevel.gain;
+            },
+            set: function (value) {
+                this.feedbackLevel.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
+            }
+        },
         defaults: {
             writable: true,
             value: {
@@ -1715,15 +1754,20 @@ return /******/ (function(modules) { // webpackBootstrap
                     value: 0.3,
                     min: 0,
                     max: 1,
-                    automatable: false,
+                    automatable: true,
                     type: FLOAT
                 },
                 wetLevel: {
                     value: 0.5,
                     min: 0,
                     max: 1,
-                    automatable: false,
+                    automatable: true,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         }
@@ -1734,12 +1778,11 @@ return /******/ (function(modules) { // webpackBootstrap
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
-        this.splitter = this.activateNode = userContext.createChannelSplitter(
-                2),
-            this.amplitudeL = userContext.createGain(),
-            this.amplitudeR = userContext.createGain(),
-            this.merger = userContext.createChannelMerger(2),
-            this.output = userContext.createGain();
+        this.splitter = this.activateNode = userContext.createChannelSplitter(2);
+        this.amplitudeL = userContext.createGain();
+        this.amplitudeR = userContext.createGain();
+        this.merger = userContext.createChannelMerger(2);
+        this.output = userContext.createGain();
         this.lfoL = new userInstance.LFO({
             target: this.amplitudeL.gain,
             callback: pipe
@@ -1766,7 +1809,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
         this.lfoL.activate(true);
         this.lfoR.activate(true);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Tremolo.prototype = Object.create(Super, {
         name: {
@@ -1795,6 +1838,11 @@ return /******/ (function(modules) { // webpackBootstrap
                     max: 11,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -1868,7 +1916,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
         this.activateNode.gain.value = 2;
         this.envelopeFollower.activate(true);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.WahWah.prototype = Object.create(Super, {
         name: {
@@ -1916,6 +1964,11 @@ return /******/ (function(modules) { // webpackBootstrap
                     max: 1,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -2032,7 +2085,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.target = properties.target || {};
         this.callback = properties.callback || function() {};
 
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.EnvelopeFollower.prototype = Object.create(Super, {
         name: {
@@ -2053,6 +2106,11 @@ return /******/ (function(modules) { // webpackBootstrap
                     max: 0.5,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -2177,7 +2235,7 @@ return /******/ (function(modules) { // webpackBootstrap
         this.phase = initValue(properties.phase, this.defaults.phase.value);
         this.target = properties.target || {};
         this.output.onaudioprocess = this.callback(properties.callback || function() {});
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.LFO.prototype = Object.create(Super, {
         name: {
@@ -2218,6 +2276,11 @@ return /******/ (function(modules) { // webpackBootstrap
                     max: 2 * Math.PI,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -2344,60 +2407,72 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tunajs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(tunajs__WEBPACK_IMPORTED_MODULE_0__);
 
 
-/** Let's do the vendor-prefix dance. **/
-var audioContext = window.AudioContext || window.webkitAudioContext;
-
-var aScene = document.querySelector('a-scene');
-var context;
-if ( aScene && aScene.audioListener && aScene.audioListener.context){
-    context = aScene.audioListener.context
-    console.log("An A-Frame scene has been detected.")
-}
-else {
-    context = new audioContext();
-}
-var unlock = function(){
-    if ( context.state === 'suspended' ) {
-        context.resume()
-    }
-    else if ( context.state === 'running' ) {
-        console.log("The audio context is running.", context)
-        window.removeEventListener('mousemove', unlock)
-        window.removeEventListener('touchstart', unlock)
-        window.removeEventListener('touchend', unlock)
-    }
-}
-window.addEventListener('mousemove', unlock)
-window.addEventListener('touchstart', unlock)
-window.addEventListener('touchend', unlock)
-// create a wrapper for old versions of `getUserMedia`
-var getUserMedia = (function(window) {
-    if (window.navigator.mediaDevices && window.navigator.mediaDevices.getUserMedia) {
-        // Browser supports promise based `getUserMedia`
-        return window.navigator.mediaDevices.getUserMedia.bind(window.navigator.mediaDevices);
-    }
-    var navigatorGetUserMedia = window.navigator.getUserMedia || window.navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
-    if (navigatorGetUserMedia) {
-        // Browser supports old `getUserMedia` with callbacks.
-        return function(constraints) {
-            return new Promise(function(resolve, reject) {
-                navigatorGetUserMedia.call(window.navigator, constraints, resolve, reject);
-            });
-        };
-    }
-
-    return function() {
-        throw "getUserMedia is unsupported";
-    };
-}(window));
-
-if (getUserMedia)
-    console.log("Your browser supports getUserMedia.");
-else
-    console.log("Your browser does not support getUserMedia.");
-/////////////////////////////////////////
 
 var Wad = (function(){
+
+    var audioContext = window.AudioContext || window.webkitAudioContext;
+
+    var logStuff = {
+        verbosity: 0,
+        suppressedLogs: 0
+    }
+
+    var logMessage = function(message, logLevel){
+        var logLevel = logLevel || 1
+        if ( logStuff.verbosity >= logLevel ) {
+            console.log(message)
+        } 
+        else { logStuff.suppressedLogs++ }
+    }
+    
+    var aScene = document.querySelector('a-scene');
+    var context;
+    if ( aScene && aScene.audioListener && aScene.audioListener.context){
+        context = aScene.audioListener.context
+        logMessage("An A-Frame scene has been detected.")
+    }
+    else {
+        context = new audioContext();
+    }
+    var unlock = function(){
+        if ( context.state === 'suspended' ) {
+            context.resume()
+        }
+        else if ( context.state === 'running' ) {
+            logMessage("The audio context is running.")
+            logMessage(context)
+            window.removeEventListener('mousemove', unlock)
+            window.removeEventListener('touchstart', unlock)
+            window.removeEventListener('touchend', unlock)
+        }
+    }
+    window.addEventListener('mousemove', unlock)
+    window.addEventListener('touchstart', unlock)
+    window.addEventListener('touchend', unlock)
+    // create a wrapper for old versions of `getUserMedia`
+    var getUserMedia = (function(window) {
+        if (window.navigator.mediaDevices && window.navigator.mediaDevices.getUserMedia) {
+            // Browser supports promise based `getUserMedia`
+            return window.navigator.mediaDevices.getUserMedia.bind(window.navigator.mediaDevices);
+        }
+        var navigatorGetUserMedia = window.navigator.getUserMedia || window.navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
+        if (navigatorGetUserMedia) {
+            // Browser supports old `getUserMedia` with callbacks.
+            return function(constraints) {
+                return new Promise(function(resolve, reject) {
+                    navigatorGetUserMedia.call(window.navigator, constraints, resolve, reject);
+                });
+            };
+        }
+    
+        return function() {
+            throw "getUserMedia is unsupported";
+        };
+    }(window));
+    
+    if (getUserMedia) { logMessage("Your browser supports getUserMedia."); }
+    else { logMessage("Your browser does not support getUserMedia."); }
+
 
 /** Pre-render a noise buffer instead of generating noise on the fly. **/
     var noiseBuffer = (function(){
@@ -2429,19 +2504,20 @@ var Wad = (function(){
 /** Set up the default ADSR envelope. **/
     var constructEnv = function(that, arg){
         that.env = { //default envelope, if one is not specified on play
-            attack  : arg.env ? valueOrDefault(arg.env.attack,  1) : 0,    // time in seconds from onset to peak volume
+            attack  : arg.env ? valueOrDefault(arg.env.attack,  0) : 0,    // time in seconds from onset to peak volume
             decay   : arg.env ? valueOrDefault(arg.env.decay,   0) : 0,    // time in seconds from peak volume to sustain volume
             sustain : arg.env ? valueOrDefault(arg.env.sustain, 1) : 1,    // sustain volume level, as a percent of peak volume. min:0, max:1
             hold    : arg.env ? valueOrDefault(arg.env.hold, 3.14159) : 3.14159, // time in seconds to maintain sustain volume
             release : arg.env ? valueOrDefault(arg.env.release, 0) : 0     // time in seconds from sustain volume to zero volume
         };
         that.defaultEnv = {
-            attack  : arg.env ? valueOrDefault(arg.env.attack,  1) : 0,    // time in seconds from onset to peak volume
+            attack  : arg.env ? valueOrDefault(arg.env.attack,  0) : 0,    // time in seconds from onset to peak volume
             decay   : arg.env ? valueOrDefault(arg.env.decay,   0) : 0,    // time in seconds from peak volume to sustain volume
             sustain : arg.env ? valueOrDefault(arg.env.sustain, 1) : 1,    // sustain volume level, as a percent of peak volume. min:0, max:1
             hold    : arg.env ? valueOrDefault(arg.env.hold, 3.14159) : 3.14159, // time in seconds to maintain sustain volume
             release : arg.env ? valueOrDefault(arg.env.release, 0) : 0     // time in seconds from sustain volume to zero volume
         };
+        that.userSetHold = !!(arg.env && arg.env.hold)
     }
 /////////////////////////////////////////
 
@@ -2484,9 +2560,11 @@ Don't let the Wad play until all necessary files have been downloaded. **/
             context.decodeAudioData(request.response, function (decodedBuffer){
                 that.decodedBuffer = decodedBuffer;
                 if ( that.env.hold === 3.14159 ) { // audio buffers should not use the default hold
-                    that.defaultEnv.hold = that.decodedBuffer.duration + 1
-                    that.env.hold = that.decodedBuffer.duration + 1
+                    that.defaultEnv.hold = that.decodedBuffer.duration
+                    that.env.hold = that.decodedBuffer.duration
                 }
+                that.duration = (that.env.attack + that.env.decay + that.env.hold + that.env.release) * (1/(that.rate)) * 1000
+
                 if ( callback ) { callback(that); }
                 that.playable++;
                 if ( that.playOnLoad ) { that.play(that.playOnLoadArg); }
@@ -2576,7 +2654,7 @@ Check out http://www.voxengo.com/impulses/ for free impulse responses. **/
             };
         }
         if ( that.panning.type === 'stereo' && !context.createStereoPanner ) {
-            console.log("Your browser does not support stereo panning. Falling back to 3D panning.")
+            logMessage("Your browser does not support stereo panning. Falling back to 3D panning.")
             that.panning = {
                 location     : [0,0,0],
                 type         : '3d',
@@ -2602,12 +2680,11 @@ Check out http://www.voxengo.com/impulses/ for free impulse responses. **/
         that.mediaStreamSource = null;
         that.gain              = null;
         return getUserMedia({audio: true, video: false}).then(function(stream) {
-            // console.log('got stream')
             that.mediaStreamSource = context.createMediaStreamSource(stream);
             Wad.micConsent = true
             setUpMic(that, arg);
             return that;
-        }).catch(function(error) { console.log('Error setting up microphone input: ', error); }); // This is the error callback.
+        }).catch(function(error) { logMessage('Error setting up microphone input: ', error); }); // This is the error callback.
     };
 ////////////////////////////////////////////////////////////////////
 
@@ -2617,7 +2694,7 @@ Check out http://www.voxengo.com/impulses/ for free impulse responses. **/
         that.gain.gain.value = valueOrDefault(arg.volume,that.volume);
         that.nodes.push(that.mediaStreamSource);
         that.nodes.push(that.gain);
-        // console.log('that ', arg)
+  
 
         if ( that.filter || arg.filter ) { createFilters(that, arg); }
 
@@ -2632,6 +2709,8 @@ Check out http://www.voxengo.com/impulses/ for free impulse responses. **/
         setUpTunaOnPlay(that, arg)
         that.setUpExternalFxOnPlay(arg, context);
     }
+
+    var allWads = []
 
     var Wad = function(arg){
 /** Set basic Wad properties **/
@@ -2657,6 +2736,7 @@ Check out http://www.voxengo.com/impulses/ for free impulse responses. **/
         this.constructExternalFx(arg, context);
         constructPanning(this, arg);
         constructDelay(this, arg);
+        this.duration = (this.env.attack + this.env.decay + this.env.hold + this.env.release) * (1/(this.rate)) * 1000
 ////////////////////////////////
 
 
@@ -2697,8 +2777,9 @@ Check out http://www.voxengo.com/impulses/ for free impulse responses. **/
         }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
         else { arg.callback && arg.callback(this) }
+        allWads.push(this)
     };
-
+    Wad.allWads = allWads
     Wad.micConsent = false
     Wad.audioContext = context
     if ( typeof tunajs__WEBPACK_IMPORTED_MODULE_0___default.a != undefined ) {
@@ -2716,7 +2797,8 @@ as specified by the volume envelope and filter envelope **/
     };
 
     var playEnv = function(wad, arg){
-        if ( wad.env.hold === -1 ){
+        var loop = arg.loop || arg.loop
+        if ( wad.env.hold === -1 || (loop && !wad.userSetHold && !(arg.env && arg.env.hold) ) ){
             var hold = 999
         }
         else { var hold = wad.env.hold }
@@ -2736,7 +2818,6 @@ as specified by the volume envelope and filter envelope **/
 /** When all the nodes are set up for this Wad, this function plugs them into each other,
 with special handling for nodes with custom interfaces (e.g. reverb, delay). **/
     var plugEmIn = function(that, arg){
-        // console.log('nodes? ', that.nodes)
         var destination = ( arg && arg.destination ) || that.destination;
         for ( var i = 1; i < that.nodes.length; i++ ) {
             if ( that.nodes[i-1].interface === 'custom' ) {
@@ -2809,6 +2890,7 @@ with special handling for nodes with custom interfaces (e.g. reverb, delay). **/
                 release : that.defaultEnv.release
             };
         }
+
     };
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -2981,13 +3063,10 @@ with special handling for nodes with custom interfaces (e.g. reverb, delay). **/
                 tunaConfig[key] = arg.tuna[key]
             }
         }
-        // console.log('tunaconfig: ', tunaConfig)
         for ( var key in tunaConfig) {
-            // console.log(key)
             var tunaEffect = new Wad.tuna[key](tunaConfig[key])
             that.nodes.push(tunaEffect)
         }
-        // console.log(that.nodes)
     }
 ///
 
@@ -3036,7 +3115,7 @@ then finally play the sound by calling playEnv() **/
                 }
             }
             else { 
-                console.log('You have not given your browser permission to use your microphone.')
+                logMessage('You have not given your browser permission to use your microphone.')
                 getConsent(this, arg).then(function (that) {
                     that.play(arg);
                 });
@@ -3077,6 +3156,7 @@ then finally play the sound by calling playEnv() **/
             if (arg.exactTime === undefined) {
                 arg.exactTime = context.currentTime + arg.wait;
             }
+            this.lastPlayedTime = arg.exactTime
 
             this.nodes.push(this.soundSource);
 
@@ -3166,7 +3246,7 @@ then finally play the sound by calling playEnv() **/
         else {
 
             //Inform that there is no delay on the current wad
-            console.log("Sorry, but the wad does not contain a soundSource!");
+            logMessage("Sorry, but the wad does not contain a soundSource!");
         }
 
         return this;
@@ -3180,7 +3260,6 @@ then finally play the sound by calling playEnv() **/
             this.pitch = Wad.pitches[pitch]
         }
         else {
-            console.log('else')
             if ( this.soundSource ) {
                 this.soundSource.frequency.value = pitch;
             }
@@ -3240,7 +3319,7 @@ then finally play the sound by calling playEnv() **/
         else {
 
             //Inform that there is no reverb on the current wad
-            console.log("Sorry, but the wad does not contain Reverb!");
+            logMessage("Sorry, but the wad does not contain Reverb!");
         }
 
         return this;
@@ -3289,7 +3368,7 @@ then finally play the sound by calling playEnv() **/
         else {
 
             //Inform that there is no delay on the current wad
-            console.log("Sorry, but the wad does not contain delay!");
+            logMessage("Sorry, but the wad does not contain delay!", 2);
         }
 
         return this;
@@ -3297,13 +3376,27 @@ then finally play the sound by calling playEnv() **/
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-
+    Wad.prototype.pause = function(label){
+        this.pauseTime = context.currentTime
+        this.stop(label)
+    }
+    Wad.prototype.unpause = function(arg){
+        arg = arg || {}
+        if ( this.pauseTime && this.lastPlayedTime ) {
+            arg.offset = this.pauseTime - this.lastPlayedTime
+        }
+        else { 
+            logMessage("You tried to unpause a wad that was not played and paused, so it just played normally instead.", 2)
+        }
+        this.play(arg)
+    }
 
 /** If multiple instances of a sound are playing simultaneously, stop() only can stop the most recent one **/
     Wad.prototype.stop = function(label){
         if ( !( this.source === 'mic' ) ) {
             if ( !(this.gain && this.gain.length) ){
-                console.log("You tried to stop a Wad that never played. ", this)
+                logMessage("You tried to stop a Wad that never played. ", 2)
+                logMessage(this, 2)
                 return // if the wad has never been played, there's no need to stop it
             }
             else if ( label ) {
@@ -3324,7 +3417,7 @@ then finally play the sound by calling playEnv() **/
         else if (Wad.micConsent ) {
             this.mediaStreamSource.disconnect(0);
         }
-        else { console.log('You have not given your browser permission to use your microphone.')}
+        else { logMessage('You have not given your browser permission to use your microphone.')}
         if ( this.tremolo ) {
             this.tremolo.wad.stop()
         }
@@ -3420,8 +3513,9 @@ then finally play the sound by calling playEnv() **/
         this.nodes             = [this.input];
         this.destination       = arg.destination || context.destination; // the last node the sound is routed to
         this.volume            = arg.volume || 1;
-        this.output            = context.createGain();
-        this.output.gain.value = this.volume;
+        this.gain              = context.createGain();
+        this.gain.gain.value   = this.volume;
+        this.output            = context.createAnalyser();
         this.tuna              = arg.tuna || null;
 
         this.globalReverb = arg.globalReverb || false; // deprecated
@@ -3440,6 +3534,7 @@ then finally play the sound by calling playEnv() **/
         constructDelay(this, arg);
         setUpDelayOnPlay(this, arg);
         setUpTunaOnPlay(this, arg);
+        this.nodes.push(this.gain);
         this.nodes.push(this.output);
         plugEmIn(this, arg);
         this.isSetUp = true;
@@ -3479,10 +3574,10 @@ Copyright (c) 2014 Chris Wilson
 
     Wad.Poly.prototype.setVolume = function(volume){
         if ( this.isSetUp ) {
-            this.output.gain.value = volume;
+            this.gain.gain.value = volume;
         }
         else {
-            console.log('This PolyWad is not set up yet.');
+            logMessage('This PolyWad is not set up yet.');
         }
         return this;
     }
@@ -3497,7 +3592,6 @@ Copyright (c) 2014 Chris Wilson
                 wad.pitch = Wad.pitches[pitch]
             }
             else {
-                console.log('else')
                 if ( wad.soundSource ) {
                     wad.soundSource.frequency.value = pitch;
                 }
@@ -3515,7 +3609,7 @@ Copyright (c) 2014 Chris Wilson
             }
             else {
                 if ( arg && arg.volume ) {
-                    this.output.gain.value = arg.volume; // if two notes are played with volume set as a play arg, does the second one overwrite the first? maybe input should be an array of gain nodes, like regular wads.
+                    this.gain.gain.value = arg.volume; // if two notes are played with volume set as a play arg, does the second one overwrite the first? maybe input should be an array of gain nodes, like regular wads.
                     arg.volume = undefined; // if volume is set, it should change the gain on the polywad's gain node, NOT the gain nodes for individual wads inside the polywad.
                 }
                 for ( var i = 0; i < this.wads.length; i++ ) {
@@ -3524,7 +3618,7 @@ Copyright (c) 2014 Chris Wilson
             }
         }
         else {
-            console.log('This PolyWad is not set up yet.');
+            logMessage('This PolyWad is not set up yet.');
         }
         return this;
     };
@@ -3547,7 +3641,7 @@ Copyright (c) 2014 Chris Wilson
             }
         }
         else {
-            console.log('This PolyWad is not set up yet.');
+            logMessage('This PolyWad is not set up yet.');
         }
         return this;
     };
@@ -3573,6 +3667,17 @@ Copyright (c) 2014 Chris Wilson
     Wad.Poly.prototype.constructExternalFx = function(arg, context){
 
     };
+
+    Wad.stopAll = function(label){
+        for ( var i = 0; i < Wad.allWads.length; i++ ) {
+            Wad.allWads[i].stop(label)
+        }
+    }
+    Wad.setVolume = function(volume){
+        for ( var i = 0; i < Wad.allWads.length; i++ ) {
+            Wad.allWads[i].setVolume(volume)
+        }
+    }
 
 /** If a Wad is created with reverb without specifying a URL for the impulse response,
 grab it from the defaultImpulse URL **/
@@ -3612,8 +3717,8 @@ grab it from the defaultImpulse URL **/
         'A#0' : 29.1352,
         'Bb0' : 29.1352,
         'B0'  : 30.8677,
-        'B#0'  : 32.7032,
-        'Cb1'  : 30.8677,
+        'B#0' : 32.7032,
+        'Cb1' : 30.8677,
         'C1'  : 32.7032,
         'C#1' : 34.6478,
         'Db1' : 34.6478,
@@ -3621,8 +3726,8 @@ grab it from the defaultImpulse URL **/
         'D#1' : 38.8909,
         'Eb1' : 38.8909,
         'E1'  : 41.2034,
-        'Fb1'  : 41.2034,
-        'E#1'  : 43.6535,
+        'Fb1' : 41.2034,
+        'E#1' : 43.6535,
         'F1'  : 43.6535,
         'F#1' : 46.2493,
         'Gb1' : 46.2493,
@@ -3633,8 +3738,8 @@ grab it from the defaultImpulse URL **/
         'A#1' : 58.2705,
         'Bb1' : 58.2705,
         'B1'  : 61.7354,
-        'Cb2'  : 61.7354,
-        'B#1'  : 65.4064,
+        'Cb2' : 61.7354,
+        'B#1' : 65.4064,
         'C2'  : 65.4064,
         'C#2' : 69.2957,
         'Db2' : 69.2957,
@@ -3642,8 +3747,8 @@ grab it from the defaultImpulse URL **/
         'D#2' : 77.7817,
         'Eb2' : 77.7817,
         'E2'  : 82.4069,
-        'Fb2'  : 82.4069,
-        'E#2'  : 87.3071,
+        'Fb2' : 82.4069,
+        'E#2' : 87.3071,
         'F2'  : 87.3071,
         'F#2' : 92.4986,
         'Gb2' : 92.4986,
@@ -3654,8 +3759,8 @@ grab it from the defaultImpulse URL **/
         'A#2' : 116.541,
         'Bb2' : 116.541,
         'B2'  : 123.471,
-        'Cb3'  : 123.471,
-        'B#2'  : 130.813,
+        'Cb3' : 123.471,
+        'B#2' : 130.813,
         'C3'  : 130.813,
         'C#3' : 138.591,
         'Db3' : 138.591,
@@ -3663,8 +3768,8 @@ grab it from the defaultImpulse URL **/
         'D#3' : 155.563,
         'Eb3' : 155.563,
         'E3'  : 164.814,
-        'Fb3'  : 164.814,
-        'E#3'  : 174.614,
+        'Fb3' : 164.814,
+        'E#3' : 174.614,
         'F3'  : 174.614,
         'F#3' : 184.997,
         'Gb3' : 184.997,
@@ -3675,8 +3780,8 @@ grab it from the defaultImpulse URL **/
         'A#3' : 233.082,
         'Bb3' : 233.082,
         'B3'  : 246.942,
-        'Cb4'  : 246.942,
-        'B#3'  : 261.626,
+        'Cb4' : 246.942,
+        'B#3' : 261.626,
         'C4'  : 261.626,
         'C#4' : 277.183,
         'Db4' : 277.183,
@@ -3684,8 +3789,8 @@ grab it from the defaultImpulse URL **/
         'D#4' : 311.127,
         'Eb4' : 311.127,
         'E4'  : 329.628,
-        'Fb4'  : 329.628,
-        'E#4'  : 349.228,
+        'Fb4' : 329.628,
+        'E#4' : 349.228,
         'F4'  : 349.228,
         'F#4' : 369.994,
         'Gb4' : 369.994,
@@ -3696,8 +3801,8 @@ grab it from the defaultImpulse URL **/
         'A#4' : 466.164,
         'Bb4' : 466.164,
         'B4'  : 493.883,
-        'Cb5'  : 493.883,
-        'B#4'  : 523.251,
+        'Cb5' : 493.883,
+        'B#4' : 523.251,
         'C5'  : 523.251,
         'C#5' : 554.365,
         'Db5' : 554.365,
@@ -3705,8 +3810,8 @@ grab it from the defaultImpulse URL **/
         'D#5' : 622.254,
         'Eb5' : 622.254,
         'E5'  : 659.255,
-        'Fb5'  : 659.255,
-        'E#5'  : 698.456,
+        'Fb5' : 659.255,
+        'E#5' : 698.456,
         'F5'  : 698.456,
         'F#5' : 739.989,
         'Gb5' : 739.989,
@@ -3717,17 +3822,17 @@ grab it from the defaultImpulse URL **/
         'A#5' : 932.328,
         'Bb5' : 932.328,
         'B5'  : 987.767,
-        'Cb6'  : 987.767,
-        'B#5'  : 1046.50,
+        'Cb6' : 987.767,
+        'B#5' : 1046.50,
         'C6'  : 1046.50,
         'C#6' : 1108.73,
         'Db6' : 1108.73,
         'D6'  : 1174.66,
         'D#6' : 1244.51,
         'Eb6' : 1244.51,
-        'Fb6'  : 1318.51,
+        'Fb6' : 1318.51,
         'E6'  : 1318.51,
-        'E#6'  : 1396.91,
+        'E#6' : 1396.91,
         'F6'  : 1396.91,
         'F#6' : 1479.98,
         'Gb6' : 1479.98,
@@ -3738,8 +3843,8 @@ grab it from the defaultImpulse URL **/
         'A#6' : 1864.66,
         'Bb6' : 1864.66,
         'B6'  : 1975.53,
-        'Cb7'  : 1975.53,
-        'B#6'  : 2093.00,
+        'Cb7' : 1975.53,
+        'B#6' : 2093.00,
         'C7'  : 2093.00,
         'C#7' : 2217.46,
         'Db7' : 2217.46,
@@ -3747,8 +3852,8 @@ grab it from the defaultImpulse URL **/
         'D#7' : 2489.02,
         'Eb7' : 2489.02,
         'E7'  : 2637.02,
-        'Fb7'  : 2637.02,
-        'E#7'  : 2793.83,
+        'Fb7' : 2637.02,
+        'E#7' : 2793.83,
         'F7'  : 2793.83,
         'F#7' : 2959.96,
         'Gb7' : 2959.96,
@@ -3760,7 +3865,7 @@ grab it from the defaultImpulse URL **/
         'Bb7' : 3729.31,
         'B7'  : 3951.07,
         'Cb8' : 3951.07,
-        'B#7'  : 4186.01,
+        'B#7' : 4186.01,
         'C8'  : 4186.01
     };
 
@@ -3878,40 +3983,40 @@ grab it from the defaultImpulse URL **/
 
     }
     Wad.midiInstrument = {
-        play : function() { console.log('playing midi')  },
-        stop : function() { console.log('stopping midi') }
+        play : function() { logMessage('playing midi')  },
+        stop : function() { logMessage('stopping midi') }
     };
     Wad.midiInputs  = [];
 
     var midiMap = function(event){
-        console.log(event.receivedTime, event.data);
+        logMessage(event.receivedTime, event.data, 2);
         if ( event.data[0] === 144 ) { // 144 means the midi message has note data
-            // console.log('note')
             if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
-                console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12]);
+                logMessage("Playing note: ", 2)
+                logMessage(Wad.pitchesArray[event.data[1]-12], 2);
                 Wad.midiInstrument.stop(Wad.pitchesArray[event.data[1]-12]);
             }
             else if ( event.data[2] > 0 ) {
-                console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12]);
+                logMessage("Stopping note: ", 2)
+                logMessage(Wad.pitchesArray[event.data[1]-12], 2);
                 Wad.midiInstrument.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], callback : function(that){
                 }})
             }
         }
         else if ( event.data[0] === 176 ) { // 176 means the midi message has controller data
-            console.log('controller');
+            logMessage('controller');
             if ( event.data[1] == 46 ) {
                 if ( event.data[2] == 127 ) { Wad.midiInstrument.pedalMod = true; }
                 else if ( event.data[2] == 0 ) { Wad.midiInstrument.pedalMod = false; }
             }
         }
         else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
-            console.log('pitch bend');
+            logMessage('pitch bend');
         }
     };
 
 
     var onSuccessCallback = function(midiAccess){
-        // console.log('inputs: ', m.inputs)
 
         Wad.midiInputs = []
         var val = midiAccess.inputs.values();
@@ -3919,7 +4024,8 @@ grab it from the defaultImpulse URL **/
             Wad.midiInputs.push(o.value)
         }
         // Wad.midiInputs = [m.inputs.values().next().value];   // inputs = array of MIDIPorts
-        console.log('MIDI inputs: ', Wad.midiInputs)
+        logMessage('MIDI inputs: ')
+        logMessage(Wad.midiInputs)
         // var outputs = m.outputs(); // outputs = array of MIDIPorts
         for ( var i = 0; i < Wad.midiInputs.length; i++ ) {
             Wad.midiInputs[i].onmidimessage = midiMap; // onmidimessage( event ), event.data & event.receivedTime are populated
@@ -3929,7 +4035,7 @@ grab it from the defaultImpulse URL **/
         // o.send( [ 0x80, 0x45, 0x7f ], window.performance.now() + 1000 );  // full velocity A4 note off in one second.
     };
     var onErrorCallback = function(err){
-        console.log("Failed to get MIDI access", err);
+        logMessage("Failed to get MIDI access", err);
     };
 
     if ( navigator && navigator.requestMIDIAccess ) {
@@ -3937,7 +4043,7 @@ grab it from the defaultImpulse URL **/
             navigator.requestMIDIAccess().then(onSuccessCallback, onErrorCallback);
         }
         catch(err) {
-            console.log("Failed to get MIDI access", err);
+            logMessage("Failed to get MIDI access", err);
         }
     }
 
@@ -3949,7 +4055,11 @@ grab it from the defaultImpulse URL **/
         ghost : { source : 'square', volume : .3, env : { attack : .01, decay : .002, sustain : .5, hold : 2.5, release : .3 }, filter : { type : 'lowpass', frequency : 600, q : 7, env : { attack : .7, frequency : 1600 } }, vibrato : { attack : 8, speed : 8, magnitude : 100 } },
         piano : { source : 'square', volume : 1.4, env : { attack : .01, decay : .005, sustain : .2, hold : .015, release : .3 }, filter : { type : 'lowpass', frequency : 1200, q : 8.5, env : { attack : .2, frequency : 600 } } }
     };
+
+    Wad.logs = logStuff
+
     return Wad;
+
 
 })()
 

@@ -88,7 +88,7 @@ var mainVm = new Vue({
             activeInstrument: 'alpha',
             config: {
                 numLoopTracks: 7,
-                metronomeIsEnabled : true,
+                metronomeIsEnabled : false,
                 metronomeDuration: null, // how many measures to play the metronome for. Will play indefinitely if set to a falsey value
             },
             currentTab: 'instruments'
@@ -132,10 +132,8 @@ var mainVm = new Vue({
         thatVm.instruments.epsilon = new Wad(thatVm.ls.instruments.epsilon)
 
         thatVm.nodes.preDest = new Wad.Poly()
-        console.log('loop?')
         for ( var i=0; i < thatVm.ls.config.numLoopTracks; i++ ) {
 
-            console.log('loop!')
             var loopTrack = new Wad.Poly({
                 delay : {
                     delayTime: (thatVm.ls.clock.beatsPerBar * thatVm.ls.clock.barsPerLoop * thatVm.ls.clock.beatLen) / 1000,
@@ -144,13 +142,18 @@ var mainVm = new Vue({
                     wet      : 1
                 },
             })
+            loopTrack.output.fftSize = 256
+            var bufferLength = loopTrack.output.frequencyBinCount
+            var dataArray = new Uint8Array(bufferLength)
             var state = {
-                muted     : false, 
-                recording : false,
-                scheduled : { // state is scheduled to change to at the start of each loop
+                muted      : false, 
+                recording  : false,
+                scheduled  : { // state is scheduled to change to at the start of each loop
                     muted     : false,
                     recording : false,
-                }
+                },
+                dataArray : dataArray,
+                volume: 0,
             }
             thatVm.nodes.preDest.add(loopTrack)
             thatVm.loopTracks.push({wad: loopTrack, state: state})
@@ -393,6 +396,18 @@ var mainVm = new Vue({
                 }
 
             }
+
+            // VOLUME VISUALISATION
+            for ( var i = 0; i < this.loopTracks.length; i++ ) {
+                var analyser = this.loopTracks[i].wad.output
+                analyser.getByteFrequencyData(this.loopTracks[i].state.dataArray)
+                var volume = this.loopTracks[i].state.dataArray.reduce(function(prev, cur){ return prev + cur })
+                this.loopTracks[i].state.volume = volume
+                if ( volume >= 0 ) { console.log('volume? ', volume) }
+                
+            }
+            // END VOLUME VISUALISATION
+
             this.rafID = requestAnimationFrame(this.animateFrame)
         }
     },
