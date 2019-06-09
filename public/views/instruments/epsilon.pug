@@ -1,0 +1,28 @@
+<a class="" data-toggle="collapse" href="#collapseMicrophone" role="button" aria-expanded="false" aria-controls="collapseMicrophone">
+    <h2>Microphone</h2>
+</a>
+<div class="collapse bordered epsilon " id="collapseMicrophone">
+    <div class="p-3">
+        <div v-if="instruments.epsilon" class="epsilon">
+            <div v-if="instruments.epsilon.filter">
+                <label>Filter Type</label>
+                <select  v-model="instruments.epsilon.filter[0].type">
+                    <option value="lowpass">Lowpass</option>
+                    <option value="highpass">Highpass</option>
+                    <option value="bandpass">Bandpass</option>
+                    <option value="lowshelf">Lowshelf</option>
+                    <option value="highshelf">Highshelf</option>
+                    <option value="peaking">Peaking</option>
+                    <option value="notch">Notch</option>
+                    <option value="allpass">Allpass</option>
+                </select>
+                <hr>
+                <label>Filter Frequency</label>
+                <input v-model.number="instruments.epsilon.filter[0].frequency" type="range" min="0" max="6000" >
+                <input v-model.number="instruments.epsilon.filter[0].frequency" >
+
+            </div>
+        
+        </div>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+<div class="beat-map">
+    div(
+        v-for="n in beatsPerLoop" 
+        class="beat-box d-inline-block" 
+        v-bind:style="{width: beatBoxWidth}"
+        v-bind:class="{'active-beat': ls.clock.curBeat == n}"
+    ) {{n}}
+</div>
+<div v-for="loopTrack in loopTracks">
+    <marquee>Voluuuume!</marquee>
+</div>

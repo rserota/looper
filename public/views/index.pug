@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    <div v-if="ls.currentTab == 'time'" class="time-config">
+        include time
+    </div>
+
+    <div v-if="ls.currentTab == 'instruments'" class="instrument-config">
+        include instruments/instruments
+    </div>
+
+    <div v-if="ls.currentTab == 'performance'" class="performance">
+        include performance
+    </div>

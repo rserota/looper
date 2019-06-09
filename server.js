@@ -39,7 +39,7 @@ app.use(sessionMiddleware)
 
 // app.use(mw.userInView)
 
-// app.use(require('./routes/main.router')) // these routes always return HTML
+app.use(require('./routes/main.router')) // these routes always return HTML
 // app.use(require('./routes/auth.router'))
 
 

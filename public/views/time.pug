@@ -1,0 +1,10 @@
+<button @click="startClock">Start Clock</button>
+<button @click="stopClock">Stop Clock</button>
+<button @click="resetApp">Reset App</button>
+<label>Beat Length(ms)</label>
+<input type="number" v-model="ls.clock.beatLen">
+<input v-model="ls.sliders.beatLen" type="range" min="5" max="50" >
+<br>
+<input type="number" v-model="ls.clock.beatsPerBar">
+<br>
+<input type="number" v-model="ls.clock.barsPerLoop">

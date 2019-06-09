@@ -34,6 +34,18 @@ var mainVm = new Vue({
                         // env : { attack: .01 }
                     },
                 },
+                ALPHA: {
+                    source:'sawtooth',
+                    env: {
+                        attack: .01,
+                        release: .3,
+                    },
+                    filter  : {
+                        type      : 'lowpass', 
+                        frequency : 300,
+                        // env : { attack: .01 }
+                    },
+                },
                 beta: '4',
                 gamma: null,
                 delta: null,
@@ -95,6 +107,7 @@ var mainVm = new Vue({
         }, // (L)ocal (S)torage data
         instruments: { // individual wads, which cannot be serialized
             alpha: null, // pianoish
+            ALPHA: null, // pianoish
             beta : null, // bass
             gamma : null, // synth
             delta: {
@@ -128,6 +141,7 @@ var mainVm = new Vue({
 
         // instrument setup 
         thatVm.instruments.alpha = new Wad(thatVm.ls.instruments.alpha)
+        thatVm.instruments.ALPHA = new Wad(thatVm.ls.instruments.ALPHA)
 
         thatVm.instruments.epsilon = new Wad(thatVm.ls.instruments.epsilon)
 
@@ -182,6 +196,7 @@ var mainVm = new Vue({
                     // .add(thatVm.instruments.delta.midTom)
                     // .add(thatVm.instruments.delta.lowTom)
                     .add(thatVm.instruments.alpha)
+                    .add(thatVm.instruments.ALPHA)
                     // .add(thatVm.instruments.beta)
                     // .add(thatVm.instruments.gamma);
                     // .add(thatVm.instruments.gamma);
@@ -336,7 +351,8 @@ var mainVm = new Vue({
         },
         changeSource: function(which, event){
             console.log(mainVm.instruments[which].source) 
-            mainVm.instruments[which].source = event.target.value
+            mainVm.ls.instruments[which].source = event.target.value
+            mainVm.instruments[which].source    = event.target.value
         },
         recordToTrack : function(trackNum){
             var thatVm = this
