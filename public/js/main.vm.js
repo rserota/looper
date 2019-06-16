@@ -3,118 +3,20 @@ var tick = new Wad({source:'audio/hatClosed.wav'})
 var mainVm = new Vue({
     el: '#vue-root',
     data: {
-        ls: {
-            clock: {
-                start: 0,
-                prevBeat: 0,
-                curBeat: 0,
-                beatsPerBar: 4,
-                barsPerLoop: 2,
-                beatLen: 1000,
-            },
-            sliders: {
-                beatLen: 20
-            },
-            knobs: { // keeps track of the last known position of the physical knobs on the keyboard
-                volume: 0,
-                pitchBend: 0,
-                modulation: 0,
-
-            },
-            instruments: {
-                alpha: {
-                    source:'sawtooth',
-                    env: {
-                        attack: .01,
-                        release: .3,
-                    },
-                    filter  : {
-                        type      : 'lowpass', 
-                        frequency : 300,
-                        // env : { attack: .01 }
-                    },
-                },
-                ALPHA: {
-                    source:'sawtooth',
-                    env: {
-                        attack: .01,
-                        release: .3,
-                    },
-                    filter  : {
-                        type      : 'lowpass', 
-                        frequency : 300,
-                        // env : { attack: .01 }
-                    },
-                },
-                beta: '4',
-                gamma: null,
-                delta: null,
-                epsilon: { 
-                    source : 'mic',
-                    filter : {
-                        type : 'highpass',
-                        frequency : 900
-                    },
-                    // delay : {
-                    //     delayTime: 1,
-                    //     maxDelayTime: 20,
-                    //     feedback : 1,
-                    //     wet      : 1
-                    // },
-                    panning: 0,
-                    // reverb : { 
-                    //     impulse :'http://localhost:8000/widehall.wav',
-                    //     wet : .21
-                    // },
-                    tuna: {
-                        // Delay: {
-                        //     feedback: 0.45,    //0 to 1+
-                        //     delayTime: 150,    //1 to 10000 milliseconds
-                        //     wetLevel: 0.45,    //0 to 1+
-                        //     dryLevel: 1,       //0 to 1+
-                        //     cutoff: 2000,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
-                        //     bypass: 0
-                        // },
-
-                        // it sounds like i'm under water
-                        // WahWah: {
-                        //     automode: true,                //true/false
-                        //     baseFrequency: 0.5,            //0 to 1
-                        //     excursionOctaves: 2,           //1 to 6
-                        //     sweep: 0.2,                    //0 to 1
-                        //     resonance: 10,                 //1 to 100
-                        //     sensitivity: 0.5,              //-1 to 1
-                        //     bypass: 0
-                        // },
-                        // Bitcrusher:{
-                        //     bits: 16,          //1 to 16
-                        //     normfreq: 0.1,    //0 to 1
-                        //     bufferSize: 256  //256 to 16384 // it gets slow when this number is high
-                        // },
-
-                    }
-            
-                },
-                metronome: null,
-            },
-            activeInstrument: 'alpha',
-            config: {
-                numLoopTracks: 7,
-                metronomeIsEnabled : false,
-                metronomeDuration: null, // how many measures to play the metronome for. Will play indefinitely if set to a falsey value
-            },
-            currentTab: 'instruments'
-        }, // (L)ocal (S)torage data
+        ls: looperConfig, // (L)ocal (S)torage data
         instruments: { // individual wads, which cannot be serialized
             alpha: null, // pianoish
             ALPHA: null, // pianoish
             beta : null, // bass
+            BETA : null, // bass
             gamma : null, // synth
+            GAMMA : null, // synth
             delta: {
                 kick: null,
                 snare: null,
             }, // a drum kit. an array of wads
             epsilon: null, // microphone
+            EPSILON: null, // microphone
             metronome: null, // probably a single closed hat
         },
         nodes: { // individual web audio nodes, which cannot be serialized
@@ -143,7 +45,14 @@ var mainVm = new Vue({
         thatVm.instruments.alpha = new Wad(thatVm.ls.instruments.alpha)
         thatVm.instruments.ALPHA = new Wad(thatVm.ls.instruments.ALPHA)
 
+        thatVm.instruments.beta = new Wad(thatVm.ls.instruments.beta)
+        thatVm.instruments.BETA = new Wad(thatVm.ls.instruments.BETA)
+
+        thatVm.instruments.gamma = new Wad(thatVm.ls.instruments.gamma)
+        thatVm.instruments.GAMMA = new Wad(thatVm.ls.instruments.GAMMA)
+
         thatVm.instruments.epsilon = new Wad(thatVm.ls.instruments.epsilon)
+        thatVm.instruments.EPSILON = new Wad(thatVm.ls.instruments.EPSILON)
 
         thatVm.nodes.preDest = new Wad.Poly()
         for ( var i=0; i < thatVm.ls.config.numLoopTracks; i++ ) {
@@ -197,10 +106,12 @@ var mainVm = new Vue({
                     // .add(thatVm.instruments.delta.lowTom)
                     .add(thatVm.instruments.alpha)
                     .add(thatVm.instruments.ALPHA)
-                    // .add(thatVm.instruments.beta)
-                    // .add(thatVm.instruments.gamma);
-                    // .add(thatVm.instruments.gamma);
-                    .add(thatVm.instruments.epsilon);
+                    .add(thatVm.instruments.beta)
+                    .add(thatVm.instruments.BETA)
+                    .add(thatVm.instruments.gamma)
+                    .add(thatVm.instruments.GAMMA)
+                    .add(thatVm.instruments.epsilon)
+                    .add(thatVm.instruments.EPSILON)
                 thatVm.nodes.preDest.add(thatWad)
             }
         })
@@ -320,8 +231,15 @@ var mainVm = new Vue({
                 // but how do we keep the mic on while playing other instruments?
                 this.instruments.epsilon.stop()
             }
-
         },
+        modifyInstrument: function(isModified){
+            if ( ifModified ) {
+                this.ls.activeInstrument = this.ls.activeInstrument.toUpperCase()
+            }
+            else if ( !ifModified ) {
+                this.ls.activeInstrument = this.ls.activeInstrument.toLowerCase()
+            }
+        }, 
         openTab: function(which){
             console.log(which)
             this.ls.currentTab = which
