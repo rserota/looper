@@ -337,7 +337,7 @@ var mainVm = new Vue({
                 analyser.getByteFrequencyData(this.loopTracks[i].state.dataArray)
                 var volume = this.loopTracks[i].state.dataArray.reduce(function(prev, cur){ return prev + cur })
                 this.loopTracks[i].state.volume = volume
-                if ( volume >= 0 ) { console.log('volume? ', volume) }
+                if ( volume > 0 ) { console.log('volume? ', volume) }
                 
             }
             // END VOLUME VISUALISATION

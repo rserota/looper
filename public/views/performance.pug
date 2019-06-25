@@ -6,6 +6,7 @@
         v-bind:class="{'active-beat': ls.clock.curBeat == n}"
     ) {{n}}
 </div>
-<div v-for="loopTrack in loopTracks">
-    <marquee>Voluuuume!</marquee>
+<div class="d-inline-block" v-for="loopTrack in loopTracks">
+    //- <marquee>Voluuuume!</marquee>
+    <div class="volume-bar d-inline-block" v-bind:style="{height:(loopTrack.state.volume/100)+'px'}">VOLUME: {{loopTrack.state.volume}}</div>
 </div>
