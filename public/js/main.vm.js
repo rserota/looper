@@ -145,78 +145,120 @@ var mainVm = new Vue({
             //     thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
             // }
             if ( event.data[0] === 144 ) { // 144 means the midi message has note data
+                this.handleKeyEventData(event)
+            }
+            else if ( event.data[0] === 176 ) { // 176 means the midi message has controller data
+                this.handleControllerEventData(event)
+            }
+        },
+        handleKeyEventData: function(event){ // the user pressed a key on the midi keyboard
+            if ( event.data[1] < 36 ) {
+                this.handleAdminKeyEventData(event)
+            }
+            else if ( event.data[1] >= 36 ) {
+                console.log('play notes')
 
-                if ( event.data[1] < 36 ) {
-                    // admin stuff
-                    console.log('do admin stuff')
-                    if ( event.data[1] === 23 ){
-                        if ( event.data[2] > 0 ) {
-                            console.log('record...')
-                            this.hotkeys.record = true
-                        }
-                        else if ( event.data[2] === 0 ) {
-                            this.hotkeys.record = false
-                        }
-                    }
-
-
-                    else if ( this.loopTrackMidiKeys.includes(event.data[1]) ) {
-                        console.log('a track key')
-                        if ( this.hotkeys.record  && event.data[2] > 0 ) {
-                            this.recordToTrack(this.loopTrackMidiKeys.indexOf(event.data[1]))
-                        }
-                    }
-
-                    // SWITCHING INSTRUMENTS
-                    else if ( this.instrumentMidiKeys.includes(event.data[1]) ) {
-                        console.log('switch instruments')
-                        if      ( event.data[1] == this.instrumentMidiKeys[0] ) {
-                            this.switchInstruments('alpha')
-                        }
-                        else if ( event.data[1] == this.instrumentMidiKeys[1] ) {
-                            this.ls.activeInstrument = 'beta'
-                        }
-                        else if ( event.data[1] == this.instrumentMidiKeys[2] ) {
-                            this.ls.activeInstrument = 'gamma'
-                        }
-                        else if ( event.data[1] == this.instrumentMidiKeys[3] ) {
-                            this.ls.activeInstrument = 'delta'
-                        }
-                        else if ( event.data[1] == this.instrumentMidiKeys[4] ) {
-                            this.switchInstruments('epsilon')
-
-                        }
-                    }
-                    // END SWITCHING INSTRUMENTS
+            }
+        },
+        handleAdminKeyEventData: function(event){
+            // admin stuff
+            console.log('do admin stuff')
+            if ( event.data[1] === 23 ){
+                if ( event.data[2] > 0 ) {
+                    console.log('record...')
+                    this.hotkeys.record = true
                 }
-                else if ( event.data[1] >= 36 ) {
-                    console.log('play notes')
-                    if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
-                        console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
-                        thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
-                    }
-                    else if ( event.data[2] > 0 ) {
-                        console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
-                        var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
-                        thatVm.instruments.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : thatVm.ls.knobs.detune, callback : function(that){
-                        }})
-                    }
+                else if ( event.data[2] === 0 ) {
+                    this.hotkeys.record = false
+                }
+            }
+
+
+            else if ( this.loopTrackMidiKeys.includes(event.data[1]) ) {
+                console.log('a track key')
+                if ( this.hotkeys.record  && event.data[2] > 0 ) {
+                    this.recordToTrack(this.loopTrackMidiKeys.indexOf(event.data[1]))
+                }
+            }
+
+            // SWITCHING INSTRUMENTS
+            else if ( this.instrumentMidiKeys.includes(event.data[1]) ) {
+                console.log('switch instruments')
+                if      ( event.data[1] == this.instrumentMidiKeys[0] ) {
+                    this.switchInstruments('alpha')
+                }
+                else if ( event.data[1] == this.instrumentMidiKeys[1] ) {
+                    this.ls.activeInstrument = 'beta'
+                }
+                else if ( event.data[1] == this.instrumentMidiKeys[2] ) {
+                    this.ls.activeInstrument = 'gamma'
+                }
+                else if ( event.data[1] == this.instrumentMidiKeys[3] ) {
+                    this.ls.activeInstrument = 'delta'
+                }
+                else if ( event.data[1] == this.instrumentMidiKeys[4] ) {
+                    this.switchInstruments('epsilon')
 
                 }
             }
-            // else if ( event.data[0] === 176 ) { // 176 means the midi message has controller data
-            //     console.log('controller')
-            //     if ( event.data[1] == 64 ) {
-            //         if ( event.data[2] == 127 ) { looper.add(mt) ; console.log('on')}
-            //         else if ( event.data[2] == 0 ) { looper.remove(mt); console.log('off')}
-            //     }
-            // }
+        },
+        handleNoteKeyEventData: function(event){
+            if ( thatVm.activeInstrument === 'alpha' ) {
+                this.handleAlphaNoteKeyEventData(event)
+            }
+            if ( thatVm.activeInstrument === 'beta' ) {
+                this.handleBetaNoteKeyEventData(event)
+                
+            }
+            if ( thatVm.activeInstrument === 'gamma' ) {
+                this.handleGammaNoteKeyEventData(event)
+                
+            }
+            if ( thatVm.activeInstrument === 'delta' ) {
+                this.handleDeltaNoteKeyEventData(event)
+                
+            }
+            if ( thatVm.activeInstrument === 'epsilon' ) {
+                this.handleEpsilonNoteKeyEventData(event)
+            }
+
+        },
+        handleAlphaNoteKeyEventData: function(event){
+            if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
+                console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
+                thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
+            }
+            else if ( event.data[2] > 0 ) {
+                console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
+                var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+                thatVm.instruments.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : thatVm.ls.knobs.detune, callback : function(that){
+                }})
+            }
             else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
                 console.log('pitch bend')
                 console.log( ( event.data[2] - 64 ) * ( 100 / 64 ) )
                 thatVm.instruments.alpha.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
                 thatVm.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
             }
+        },
+        handleBetaNoteKeyEventData: function(event){
+
+        },
+        handleGammNoteKeyEventData: function(event){
+
+        },
+        handleDeltaNoteKeyEventData: function(event){
+
+        },
+        handleEpsilonNoteKeyEventData: function(event){
+
+        },
+        handleControllerEventData: function(event){
+            //     console.log('controller')
+            //     if ( event.data[1] == 64 ) {
+            //         if ( event.data[2] == 127 ) { looper.add(mt) ; console.log('on')}
+            //         else if ( event.data[2] == 0 ) { looper.remove(mt); console.log('off')}
+            //     }
         },
         switchInstruments: function(instrument){
             if ( this.ls.activeInstrument == instrument ) {
@@ -229,6 +271,7 @@ var mainVm = new Vue({
             }
             else {
                 // but how do we keep the mic on while playing other instruments?
+                console.log('stop the mic')
                 this.instruments.epsilon.stop()
             }
         },

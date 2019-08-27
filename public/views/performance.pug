@@ -8,5 +8,5 @@
 </div>
 <div class="d-inline-block" v-for="loopTrack in loopTracks">
     //- <marquee>Voluuuume!</marquee>
-    <div class="volume-bar d-inline-block" v-bind:style="{height:(loopTrack.state.volume/100)+'px'}">VOLUME: {{loopTrack.state.volume}}</div>
+    <div class="volume-bar d-inline-block" v-bind:class="{recording: loopTrack.state.recording, muted: loopTrack.state.muted, scheduled: loopTrack.state.scheduled.muted}" v-bind:style="{height:(loopTrack.state.volume/100)+ 50 +'px'}">VOLUME: {{loopTrack.state.volume}}</div>
 </div>
