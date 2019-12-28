@@ -89,7 +89,13 @@ var looperConfig = {
                 // env : { attack: .01 }
             },
         },
-        delta: null,
+        delta: {
+            c1: {
+                // source: 'audio/kicks/707-kick.wav',
+                // source: 'audio/hatClosed.wav',
+                source: 'audio/Attack Kick 26.wv',
+            }
+        },
         epsilon: { 
             source : 'mic',
             filter : {

@@ -54,6 +54,8 @@ var mainVm = new Vue({
         thatVm.instruments.epsilon = new Wad(thatVm.ls.instruments.epsilon)
         thatVm.instruments.EPSILON = new Wad(thatVm.ls.instruments.EPSILON)
 
+        thatVm.instruments.delta.c1 = new Wad(thatVm.ls.instruments.delta.c1)
+
         thatVm.nodes.preDest = new Wad.Poly()
         for ( var i=0; i < thatVm.ls.config.numLoopTracks; i++ ) {
 
@@ -157,16 +159,45 @@ var mainVm = new Vue({
             }
             else if ( event.data[1] >= 36 ) {
                 console.log('play notes')
+                this.handleNoteKeyEventData(event)
 
             }
         },
         handleAdminKeyEventData: function(event){
             // admin stuff
             console.log('do admin stuff')
+
+            if ( event.data[1] === 21 ){
+                if ( event.data[2] > 0 ) {
+                    console.log('delete...')
+                    this.hotkeys.delete = true
+                    if ( this.hotkeys.schedule && this.hotkeys.record ) {
+                        this.toggleMetronome()
+                    }
+                }
+                else if ( event.data[2] === 0 ) {
+                    this.hotkeys.delete = false
+                }
+            }
+            if ( event.data[1] === 22 ){
+                if ( event.data[2] > 0 ) {
+                    console.log('schedule...')
+                    this.hotkeys.schedule = true
+                    if ( this.hotkeys.delete && this.hotkeys.record ) {
+                        this.toggleMetronome()
+                    }
+                }
+                else if ( event.data[2] === 0 ) {
+                    this.hotkeys.schedule = false
+                }
+            }
             if ( event.data[1] === 23 ){
                 if ( event.data[2] > 0 ) {
                     console.log('record...')
                     this.hotkeys.record = true
+                    if ( this.hotkeys.delete && this.hotkeys.schedule ) {
+                        this.toggleMetronome()
+                    }
                 }
                 else if ( event.data[2] === 0 ) {
                     this.hotkeys.record = false
@@ -203,22 +234,23 @@ var mainVm = new Vue({
             }
         },
         handleNoteKeyEventData: function(event){
-            if ( thatVm.activeInstrument === 'alpha' ) {
+            if ( this.ls.activeInstrument === 'alpha' ) {
+                console.log('play alpha notes')
                 this.handleAlphaNoteKeyEventData(event)
             }
-            if ( thatVm.activeInstrument === 'beta' ) {
+            if ( this.ls.activeInstrument === 'beta' ) {
                 this.handleBetaNoteKeyEventData(event)
                 
             }
-            if ( thatVm.activeInstrument === 'gamma' ) {
+            if ( this.ls.activeInstrument === 'gamma' ) {
                 this.handleGammaNoteKeyEventData(event)
                 
             }
-            if ( thatVm.activeInstrument === 'delta' ) {
+            if ( this.ls.activeInstrument === 'delta' ) {
                 this.handleDeltaNoteKeyEventData(event)
                 
             }
-            if ( thatVm.activeInstrument === 'epsilon' ) {
+            if ( this.ls.activeInstrument === 'epsilon' ) {
                 this.handleEpsilonNoteKeyEventData(event)
             }
 
@@ -226,19 +258,19 @@ var mainVm = new Vue({
         handleAlphaNoteKeyEventData: function(event){
             if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
                 console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
-                thatVm.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
+                this.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
             }
             else if ( event.data[2] > 0 ) {
                 console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
                 var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
-                thatVm.instruments.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : thatVm.ls.knobs.detune, callback : function(that){
+                this.instruments.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : this.ls.knobs.detune, callback : function(that){
                 }})
             }
             else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
                 console.log('pitch bend')
                 console.log( ( event.data[2] - 64 ) * ( 100 / 64 ) )
-                thatVm.instruments.alpha.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
-                thatVm.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+                this.instruments.alpha.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
+                this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
             }
         },
         handleBetaNoteKeyEventData: function(event){
@@ -290,6 +322,9 @@ var mainVm = new Vue({
         beforeunload: function(){
             localStorage.loopData = JSON.stringify(this.ls)
         },
+        toggleMetronome: function(){
+            console.log('...what\'s this do?')
+        }, 
         startClock: function(){
             if ( this.rafID ) {
                 cancelAnimationFrame(this.rafID)
