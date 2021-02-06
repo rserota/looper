@@ -263,8 +263,13 @@ var mainVm = new Vue({
             else if ( event.data[2] > 0 ) {
                 console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
                 var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
-                this.instruments.alpha.play({pitch : Wad.pitchesArray[event.data[1]-12], label : Wad.pitchesArray[event.data[1]-12], detune : this.ls.knobs.detune, callback : function(that){
-                }})
+                this.instruments.alpha.play({
+                    volume : .3,
+                    pitch : Wad.pitchesArray[event.data[1]-12], 
+                    label : Wad.pitchesArray[event.data[1]-12], 
+                    detune : this.ls.knobs.detune, 
+                    callback : function(that){ }
+                })
             }
             else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
                 console.log('pitch bend')
