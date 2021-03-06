@@ -219,13 +219,13 @@ var mainVm = new Vue({
                     this.switchInstruments('alpha')
                 }
                 else if ( event.data[1] == this.instrumentMidiKeys[1] ) {
-                    this.ls.activeInstrument = 'beta'
+                    this.switchInstruments('beta')
                 }
                 else if ( event.data[1] == this.instrumentMidiKeys[2] ) {
-                    this.ls.activeInstrument = 'gamma'
+                    this.switchInstruments('gamma')
                 }
                 else if ( event.data[1] == this.instrumentMidiKeys[3] ) {
-                    this.ls.activeInstrument = 'delta'
+                    this.switchInstruments('delta')
                 }
                 else if ( event.data[1] == this.instrumentMidiKeys[4] ) {
                     this.switchInstruments('epsilon')
@@ -270,34 +270,22 @@ var mainVm = new Vue({
                     callback : function(that){ }
                 })
             }
-            else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
-                console.log('pitch bend')
-                console.log( ( event.data[2] - 64 ) * ( 100 / 64 ) )
-                this.instruments.alpha.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
-                this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
-            }
         },
         handleBetaNoteKeyEventData: function(event){
             if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
                 console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
-                this.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
+                this.instruments.beta.stop(Wad.pitchesArray[event.data[1]-12])
             }
             else if ( event.data[2] > 0 ) {
                 console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
                 var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
-                this.instruments.alpha.play({
+                this.instruments.beta.play({
                     volume : .3,
                     pitch : Wad.pitchesArray[event.data[1]-12], 
                     label : Wad.pitchesArray[event.data[1]-12], 
                     detune : this.ls.knobs.detune, 
                     callback : function(that){ }
                 })
-            }
-            else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
-                console.log('pitch bend')
-                console.log( ( event.data[2] - 64 ) * ( 100 / 64 ) )
-                this.instruments.alpha.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
-                this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
             }
         },
         handleGammNoteKeyEventData: function(event){
@@ -311,18 +299,18 @@ var mainVm = new Vue({
         },
         handleControllerEventData: function(event){
 			if ( event.data[0] === 224 ) {
+				if ( event.data[2] === 125 ) { event.data[2] = 128 }// bugfix for my keyboard. it only goes up to 125
 				if ( this.ls.activeInstrument === 'alpha' ) {
 					this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
 					this.instruments.alpha.setDetune(this.ls.knobs.detune)
 				}
+				if ( this.ls.activeInstrument === 'beta' ) {
+					this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 )
+					this.instruments.beta.setDetune(this.ls.knobs.detune)
+				}
 			}
 			if ( event.data[0] === 176 ) {
 			}
-            //     console.log('controller')
-            //     if ( event.data[1] == 64 ) {
-            //         if ( event.data[2] == 127 ) { looper.add(mt) ; console.log('on')}
-            //         else if ( event.data[2] == 0 ) { looper.remove(mt); console.log('off')}
-            //     }
         },
         switchInstruments: function(instrument){
             if ( this.ls.activeInstrument == instrument ) {
@@ -330,6 +318,7 @@ var mainVm = new Vue({
                 return
             }
             this.ls.activeInstrument = instrument
+			console.log(this.ls.activeInstrument)
             if ( instrument == 'epsilon' ) {
                 this.instruments.epsilon.play()
             }
