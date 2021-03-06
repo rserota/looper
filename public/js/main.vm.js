@@ -149,7 +149,7 @@ var mainVm = new Vue({
             if ( event.data[0] === 144 ) { // 144 means the midi message has note data
                 this.handleKeyEventData(event)
             }
-            else if ( event.data[0] === 176 ) { // 176 means the midi message has controller data
+            else if ( [176, 224].includes(event.data[0]) ) { // 176 or 224 means the midi message has controller data
                 this.handleControllerEventData(event)
             }
         },
@@ -262,7 +262,6 @@ var mainVm = new Vue({
             }
             else if ( event.data[2] > 0 ) {
                 console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
-                var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
                 this.instruments.alpha.play({
                     volume : .3,
                     pitch : Wad.pitchesArray[event.data[1]-12], 
@@ -279,7 +278,27 @@ var mainVm = new Vue({
             }
         },
         handleBetaNoteKeyEventData: function(event){
-
+            if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
+                console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
+                this.instruments.alpha.stop(Wad.pitchesArray[event.data[1]-12])
+            }
+            else if ( event.data[2] > 0 ) {
+                console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
+                var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+                this.instruments.alpha.play({
+                    volume : .3,
+                    pitch : Wad.pitchesArray[event.data[1]-12], 
+                    label : Wad.pitchesArray[event.data[1]-12], 
+                    detune : this.ls.knobs.detune, 
+                    callback : function(that){ }
+                })
+            }
+            else if ( event.data[0] === 224 ) { // 224 means the midi message has pitch bend data
+                console.log('pitch bend')
+                console.log( ( event.data[2] - 64 ) * ( 100 / 64 ) )
+                this.instruments.alpha.setDetune( ( event.data[2] - 64 ) * ( 100 / 64 ) * 12 )
+                this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+            }
         },
         handleGammNoteKeyEventData: function(event){
 
@@ -291,6 +310,14 @@ var mainVm = new Vue({
 
         },
         handleControllerEventData: function(event){
+			if ( event.data[0] === 224 ) {
+				if ( this.ls.activeInstrument === 'alpha' ) {
+					this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+					this.instruments.alpha.setDetune(this.ls.knobs.detune)
+				}
+			}
+			if ( event.data[0] === 176 ) {
+			}
             //     console.log('controller')
             //     if ( event.data[1] == 64 ) {
             //         if ( event.data[2] == 127 ) { looper.add(mt) ; console.log('on')}
@@ -328,6 +355,7 @@ var mainVm = new Vue({
             localStorage.loopData = JSON.stringify(this.ls)
         },
         toggleMetronome: function(){
+			this.ls.config.metronomeIsEnabled = !this.ls.config.metronomeIsEnabled
             console.log('...what\'s this do?')
         }, 
         startClock: function(){
