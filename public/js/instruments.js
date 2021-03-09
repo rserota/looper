@@ -110,7 +110,7 @@ app.init.instruments = function(app){
             q : 1,
         }
     })
-    app.instruments.alpha.pitchShiftCoarse = 0
+    app.instruments.alpha.pitchShiftCoarse = -12
 
     app.instruments.beta = new Wad({
         source : 'sawtooth',
@@ -139,7 +139,7 @@ app.init.instruments = function(app){
         //     }
         // }
     })
-    app.instruments.beta.pitchShiftCoarse = 0
+    app.instruments.beta.pitchShiftCoarse = -24
 
     app.instruments.gamma = new Wad({ 
         source : 'sine',

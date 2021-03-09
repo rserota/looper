@@ -42,19 +42,19 @@ var looperConfig = {
             },
         },
         beta: {
-            source:'sawtooth',
+            source:'sine',
             env: {
                 attack: .01,
                 release: .3,
             },
             filter  : {
                 type      : 'lowpass', 
-                frequency : 300,
+                frequency : 900,
                 // env : { attack: .01 }
             },
         },
         BETA: {
-            source:'sawtooth',
+            source:'square',
             env: {
                 attack: .01,
                 release: .3,
@@ -99,15 +99,15 @@ var looperConfig = {
         epsilon: { 
             source : 'mic',
             filter : {
-                type : 'highpass',
-                frequency : 900
+                type : 'lowpass',
+                frequency : 400
             },
-            // delay : {
-            //     delayTime: 1,
-            //     maxDelayTime: 20,
-            //     feedback : 1,
-            //     wet      : 1
-            // },
+			delay : {
+				delayTime: .1,
+				maxDelayTime: 10,
+				feedback : .5,
+				wet      : 0
+			},
             panning: 0,
 
             tuna: {

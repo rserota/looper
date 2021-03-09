@@ -274,15 +274,15 @@ var mainVm = new Vue({
         handleBetaNoteKeyEventData: function(event){
             if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
                 console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-12])
-                this.instruments.beta.stop(Wad.pitchesArray[event.data[1]-12])
+                this.instruments.beta.stop(Wad.pitchesArray[event.data[1]-24])
             }
             else if ( event.data[2] > 0 ) {
                 console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
                 var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
                 this.instruments.beta.play({
                     volume : .3,
-                    pitch : Wad.pitchesArray[event.data[1]-12], 
-                    label : Wad.pitchesArray[event.data[1]-12], 
+                    pitch : Wad.pitchesArray[event.data[1]-24], 
+                    label : Wad.pitchesArray[event.data[1]-24], 
                     detune : this.ls.knobs.detune, 
                     callback : function(that){ }
                 })
@@ -305,11 +305,17 @@ var mainVm = new Vue({
 					this.instruments.alpha.setDetune(this.ls.knobs.detune)
 				}
 				if ( this.ls.activeInstrument === 'beta' ) {
-					this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 )
+					this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 2
 					this.instruments.beta.setDetune(this.ls.knobs.detune)
+				}
+				if ( this.ls.activeInstrument === 'epsilon' ) {
+					this.instruments.epsilon.filter[0].node.frequency.setValueAtTime(200 + (4*event.data[2]), Wad.audioContext.currentTime)
 				}
 			}
 			if ( event.data[0] === 176 ) {
+				if ( this.ls.activeInstrument === 'epsilon' ) {
+					this.instruments.epsilon.setPanning( (event.data[2]-64) * (1/64) )  
+				}
 			}
         },
         switchInstruments: function(instrument){
