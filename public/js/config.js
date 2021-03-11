@@ -90,11 +90,16 @@ var looperConfig = {
             },
         },
         delta: {
-            c1: {
-                // source: 'audio/kicks/707-kick.wav',
-                // source: 'audio/hatClosed.wav',
-                source: 'audio/Attack Kick 26.wv',
-            }
+			pedal: { source: 'audio/kick.mp3' },
+            c1: { source: 'audio/hatClosed.wav', },
+            db1: { source: 'audio/snare.wav', },
+            d1: { source: 'audio/hatOpen.wav', },
+            eb1: { source: 'audio/snare.wav', },
+            e1: { source: 'audio/crash.wav', },
+            f1: { source: 'audio/lowTom.wav', },
+            g1: { source: 'audio/midTom.wav', },
+            a1: { source: 'audio/highTom.wav', },
+            b1: { source: 'audio/cowbell.wav', },
         },
         epsilon: { 
             source : 'mic',

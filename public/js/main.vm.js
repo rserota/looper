@@ -55,6 +55,14 @@ var mainVm = new Vue({
         thatVm.instruments.EPSILON = new Wad(thatVm.ls.instruments.EPSILON)
 
         thatVm.instruments.delta.c1 = new Wad(thatVm.ls.instruments.delta.c1)
+        thatVm.instruments.delta.db1 = new Wad(thatVm.ls.instruments.delta.db1)
+        thatVm.instruments.delta.d1 = new Wad(thatVm.ls.instruments.delta.d1)
+        thatVm.instruments.delta.eb1 = new Wad(thatVm.ls.instruments.delta.eb1)
+        thatVm.instruments.delta.e1 = new Wad(thatVm.ls.instruments.delta.e1)
+        thatVm.instruments.delta.f1 = new Wad(thatVm.ls.instruments.delta.f1)
+        thatVm.instruments.delta.c1 = new Wad(thatVm.ls.instruments.delta.g1)
+        thatVm.instruments.delta.a1 = new Wad(thatVm.ls.instruments.delta.a1)
+        thatVm.instruments.delta.b1 = new Wad(thatVm.ls.instruments.delta.b1)
 
         thatVm.nodes.preDest = new Wad.Poly()
         for ( var i=0; i < thatVm.ls.config.numLoopTracks; i++ ) {
@@ -97,15 +105,16 @@ var mainVm = new Vue({
     
             callback : function(thatWad){
                 thatWad
-                    // .add(thatVm.instruments.delta.kick)
-                    // .add(thatVm.instruments.delta.closedHihat)
-                    // .add(thatVm.instruments.delta.openHihat)
-                    // .add(thatVm.instruments.delta.snare)
-                    // .add(thatVm.instruments.delta.cowbell)
-                    // .add(thatVm.instruments.delta.crash)
-                    // .add(thatVm.instruments.delta.highTom)
-                    // .add(thatVm.instruments.delta.midTom)
-                    // .add(thatVm.instruments.delta.lowTom)
+					.add(thatVm.instruments.delta.pedal)
+					.add(thatVm.instruments.delta.c1)
+					.add(thatVm.instruments.delta.db1)
+					.add(thatVm.instruments.delta.d1)
+					.add(thatVm.instruments.delta.eb1)
+					.add(thatVm.instruments.delta.e1)
+					.add(thatVm.instruments.delta.f1)
+					.add(thatVm.instruments.delta.g1)
+					.add(thatVm.instruments.delta.a1)
+					.add(thatVm.instruments.delta.b1)
                     .add(thatVm.instruments.alpha)
                     .add(thatVm.instruments.ALPHA)
                     .add(thatVm.instruments.beta)
@@ -312,9 +321,19 @@ var mainVm = new Vue({
 					this.instruments.epsilon.filter[0].node.frequency.setValueAtTime(200 + (4*event.data[2]), Wad.audioContext.currentTime)
 				}
 			}
-			if ( event.data[0] === 176 ) {
+			if ( event.data[0] === 176 && event.data[1] === 1 ) {
 				if ( this.ls.activeInstrument === 'epsilon' ) {
 					this.instruments.epsilon.setPanning( (event.data[2]-64) * (1/64) )  
+				}
+			}
+			if ( event.data[0] === 176 && event.data[1] === 64 ) {
+				if ( this.ls.activeInstrument === 'epsilon' ) {
+					if ( event.data[2] === 127 ) {
+						this.instruments.epsilon.setDelay(.2, 0.7, 0.5)
+					}
+					if ( event.data[2] === 0 ) {
+						this.instruments.epsilon.setDelay(.1, 0, 0)
+					}
 				}
 			}
         },
