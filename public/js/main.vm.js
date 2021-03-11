@@ -54,13 +54,14 @@ var mainVm = new Vue({
         thatVm.instruments.epsilon = new Wad(thatVm.ls.instruments.epsilon)
         thatVm.instruments.EPSILON = new Wad(thatVm.ls.instruments.EPSILON)
 
+        thatVm.instruments.delta.pedal = new Wad(thatVm.ls.instruments.delta.pedal)
         thatVm.instruments.delta.c1 = new Wad(thatVm.ls.instruments.delta.c1)
         thatVm.instruments.delta.db1 = new Wad(thatVm.ls.instruments.delta.db1)
         thatVm.instruments.delta.d1 = new Wad(thatVm.ls.instruments.delta.d1)
         thatVm.instruments.delta.eb1 = new Wad(thatVm.ls.instruments.delta.eb1)
         thatVm.instruments.delta.e1 = new Wad(thatVm.ls.instruments.delta.e1)
         thatVm.instruments.delta.f1 = new Wad(thatVm.ls.instruments.delta.f1)
-        thatVm.instruments.delta.c1 = new Wad(thatVm.ls.instruments.delta.g1)
+        thatVm.instruments.delta.g1 = new Wad(thatVm.ls.instruments.delta.g1)
         thatVm.instruments.delta.a1 = new Wad(thatVm.ls.instruments.delta.a1)
         thatVm.instruments.delta.b1 = new Wad(thatVm.ls.instruments.delta.b1)
 
@@ -83,7 +84,7 @@ var mainVm = new Vue({
                 recording  : false,
                 scheduled  : { // state is scheduled to change to at the start of each loop
                     muted     : false,
-                    recording : false,
+                    recording : false, // probably not going to use this. no need to schedule recording
                 },
                 dataArray : dataArray,
                 volume: 0,
@@ -216,9 +217,18 @@ var mainVm = new Vue({
 
             else if ( this.loopTrackMidiKeys.includes(event.data[1]) ) {
                 console.log('a track key')
-                if ( this.hotkeys.record  && event.data[2] > 0 ) {
+                if ( this.hotkeys.record && event.data[2] > 0 ) {
                     this.recordToTrack(this.loopTrackMidiKeys.indexOf(event.data[1]))
                 }
+				else if ( this.hotkeys.schedule && event.data[2] > 0 ) {
+					this.scheduleToTrack(this.loopTrackMidiKeys.indexOf(event.data[1]))
+                }
+				else if ( this.hotkeys.delete && event.data[2] > 0 ) {
+					this.deleteTrack(this.loopTrackMidiKeys.indexOf(event.data[1]))
+                }
+				else if ( event.data[2] > 0 ){
+					this.muteTrack(this.loopTrackMidiKeys.indexOf(event.data[1]))
+				}
             }
 
             // SWITCHING INSTRUMENTS
@@ -397,6 +407,9 @@ var mainVm = new Vue({
             mainVm.ls.instruments[which].source = event.target.value
             mainVm.instruments[which].source    = event.target.value
         },
+		scheduleToTrack: function(trackNum){
+			this.loopTracks[trackNum].state.scheduled.muted = !this.loopTracks[trackNum].state.scheduled.muted
+		},
         recordToTrack : function(trackNum){
             var thatVm = this
             if ( thatVm.recordingTo == null ) { // start recording to this track

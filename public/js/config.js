@@ -90,7 +90,14 @@ var looperConfig = {
             },
         },
         delta: {
-			pedal: { source: 'audio/kick.mp3' },
+			pedal: { 
+				source: 'audio/kick.mp3',
+				filter: {
+					type: 'lowpass',
+					frequency: 600
+				}
+				
+			},
             c1: { source: 'audio/hatClosed.wav', },
             db1: { source: 'audio/snare.wav', },
             d1: { source: 'audio/hatOpen.wav', },
