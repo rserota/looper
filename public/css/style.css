@@ -105,7 +105,7 @@ border:2px solid #000;
 padding: 20px;
 }
 .volume-bar.scheduled{
-box-shadow:4px 4px 2px
+box-shadow:5px 5px 2px
 }
 .volume-bar.recording{
 background-color:#f00

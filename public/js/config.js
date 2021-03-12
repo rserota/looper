@@ -42,6 +42,7 @@ var looperConfig = {
             },
         },
         beta: {
+			volume: .01,
             source:'sine',
             env: {
                 attack: .01,
@@ -95,18 +96,46 @@ var looperConfig = {
 				filter: {
 					type: 'lowpass',
 					frequency: 600
-				}
+				},
+				volume: .5,
 				
 			},
-            c1: { source: 'audio/hatClosed.wav', },
-            db1: { source: 'audio/snare.wav', },
-            d1: { source: 'audio/hatOpen.wav', },
-            eb1: { source: 'audio/snare.wav', },
-            e1: { source: 'audio/crash.wav', },
-            f1: { source: 'audio/lowTom.wav', },
-            g1: { source: 'audio/midTom.wav', },
-            a1: { source: 'audio/highTom.wav', },
-            b1: { source: 'audio/cowbell.wav', },
+			c1: { 
+				source: 'audio/hatClosed.wav',
+				volume: .4,
+			},
+            db1: {
+				source: 'audio/snare.wav',
+				volume: .4,
+			},
+            d1: { 
+				source: 'audio/hatOpen.wav', 
+				volume: .4,
+			},
+            eb1: {
+				source: 'audio/snare.wav', 
+				volume: .4,
+			},
+            e1: {
+				source: 'audio/crash.wav', 
+				volume: .4,
+			},
+            f1: {
+				source: 'audio/lowTom.wav', 
+				volume: .4,
+			},
+            g1: {
+				source: 'audio/midTom.wav', 
+				volume: .4,
+			},
+            a1: {
+				source: 'audio/highTom.wav', 
+				volume: .4,
+			},
+            b1: {
+				source: 'audio/cowbell.wav', 
+				volume: .4,
+			},
         },
         epsilon: { 
             source : 'mic',

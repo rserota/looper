@@ -1,5 +1,5 @@
 
-var tick = new Wad({source:'audio/hatClosed.wav'})
+var tick = new Wad({source:'audio/hatClosed.wav', volume: .2}) //metronome
 var mainVm = new Vue({
     el: '#vue-root',
     data: {
@@ -37,9 +37,9 @@ var mainVm = new Vue({
     created: function(){
         var thatVm = this
 
-        // if ( localStorage.loopData ) {
-        //     thatVm.ls = JSON.parse(localStorage.loopData)
-        // }
+		 if ( localStorage.loopData ) {
+			 thatVm.ls = JSON.parse(localStorage.loopData)
+		 }
 
         // instrument setup 
         thatVm.instruments.alpha = new Wad(thatVm.ls.instruments.alpha)
@@ -299,7 +299,7 @@ var mainVm = new Vue({
                 console.log('> playing note: ', Wad.pitchesArray[event.data[1]-12])
                 var detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
                 this.instruments.beta.play({
-                    volume : .3,
+                    volume : .2,
                     pitch : Wad.pitchesArray[event.data[1]-24], 
                     label : Wad.pitchesArray[event.data[1]-24], 
                     detune : this.ls.knobs.detune, 
@@ -307,11 +307,53 @@ var mainVm = new Vue({
                 })
             }
         },
-        handleGammNoteKeyEventData: function(event){
+        handleGammaNoteKeyEventData: function(event){
+            if ( event.data[2] === 0 ) { // noteOn velocity of 0 means this is actually a noteOff message
+                console.log('|| stopping note: ', Wad.pitchesArray[event.data[1]-24])
+                this.instruments.gamma.stop(Wad.pitchesArray[event.data[1]-24])
+            }
+            else if ( event.data[2] > 0 ) {
+                console.log('> playing note: ', Wad.pitchesArray[event.data[1]-24])
+                this.instruments.gamma.play({
+                    volume : .3,
+                    pitch : Wad.pitchesArray[event.data[1]-24], 
+                    label : Wad.pitchesArray[event.data[1]-24], 
+                    detune : this.ls.knobs.detune, 
+                    callback : function(that){ }
+                })
+            }
 
         },
         handleDeltaNoteKeyEventData: function(event){
-
+			if ( event.data[2] > 0 ) {
+				if ( event.data[1] === 36 ) {
+					this.instruments.delta.c1.play()
+				}
+				if ( event.data[1] === 37 ) {
+					this.instruments.delta.db1.play()
+				}
+				if ( event.data[1] === 38 ) {
+					this.instruments.delta.d1.play()
+				}
+				if ( event.data[1] === 39 ) {
+					this.instruments.delta.eb1.play()
+				}
+				if ( event.data[1] === 40 ) {
+					this.instruments.delta.e1.play()
+				}
+				if ( event.data[1] === 41 ) {
+					this.instruments.delta.f1.play()
+				}
+				if ( event.data[1] === 43 ) {
+					this.instruments.delta.g1.play()
+				}
+				if ( event.data[1] === 45 ) {
+					this.instruments.delta.a1.play()
+				}
+				if ( event.data[1] === 47 ) {
+					this.instruments.delta.b1.play()
+				}
+			}
         },
         handleEpsilonNoteKeyEventData: function(event){
 
@@ -327,14 +369,25 @@ var mainVm = new Vue({
 					this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 2
 					this.instruments.beta.setDetune(this.ls.knobs.detune)
 				}
+				if ( this.ls.activeInstrument === 'gamma' ) {
+					this.ls.knobs.detune = ( event.data[2] - 64 ) * ( 100 / 64 ) * 12
+					this.instruments.gamma.setDetune(this.ls.knobs.detune)
+				}
 				if ( this.ls.activeInstrument === 'epsilon' ) {
 					this.instruments.epsilon.filter[0].node.frequency.setValueAtTime(200 + (4*event.data[2]), Wad.audioContext.currentTime)
 				}
 			}
 			if ( event.data[0] === 176 && event.data[1] === 1 ) {
-				if ( this.ls.activeInstrument === 'epsilon' ) {
-					this.instruments.epsilon.setPanning( (event.data[2]-64) * (1/64) )  
+				if ( this.ls.activeInstrument !== 'delta' ) {
+					this.instruments[this.ls.activeInstrument].setPanning( (event.data[2]-64) * (1/64) )  
 				}
+			}
+			if ( event.data[0] === 176 && event.data[1] === 7 ) {
+				//this.nodes.soundSources.setVolume( (event.data[2]) * (1/64) )
+				const newVolume = event.data[2] * (1/127)
+				console.log(newVolume)
+				this.nodes.soundSources.gain.gain.setTargetAtTime(newVolume, Wad.audioContext.currentTime, .01 )
+				
 			}
 			if ( event.data[0] === 176 && event.data[1] === 64 ) {
 				if ( this.ls.activeInstrument === 'epsilon' ) {
@@ -344,6 +397,9 @@ var mainVm = new Vue({
 					if ( event.data[2] === 0 ) {
 						this.instruments.epsilon.setDelay(.1, 0, 0)
 					}
+				}
+				if ( this.ls.activeInstrument === 'delta' && event.data[2] === 127 ) {
+					this.instruments.delta.pedal.play()
 				}
 			}
         },
@@ -380,7 +436,7 @@ var mainVm = new Vue({
         },
         toggleMetronome: function(){
 			this.ls.config.metronomeIsEnabled = !this.ls.config.metronomeIsEnabled
-            console.log('...what\'s this do?')
+            //console.log('...what\'s this do?')
         }, 
         startClock: function(){
             if ( this.rafID ) {
@@ -460,10 +516,16 @@ var mainVm = new Vue({
             if ( clock.curBeat > 0 ) {
                 if ( clock.curBeat < clock.prevBeat ) {
                     // first tic of first beat of loop
-                    console.log('fire!')
+                    //console.log('fire!')
+					for ( let i = 0; i < this.loopTracks.length; i++ ) {
+						if ( this.loopTracks[i].state.scheduled.muted ) {
+							this.loopTracks[i].state.scheduled.muted = false
+							this.muteTrack(i)
+						}
+					}
                 }
                 if ( clock.curBeat != clock.prevBeat ) {
-                    console.log('beat!',clock.curBeat)
+                    //console.log('beat!',clock.curBeat)
                     if ( this.ls.config.metronomeIsEnabled ) {
                         tick.play()
                     }
@@ -485,7 +547,9 @@ var mainVm = new Vue({
                 analyser.getByteFrequencyData(this.loopTracks[i].state.dataArray)
                 var volume = this.loopTracks[i].state.dataArray.reduce(function(prev, cur){ return prev + cur })
                 this.loopTracks[i].state.volume = volume
-                if ( volume > 0 ) { console.log('volume? ', volume) }
+                if ( volume > 0 ) { 
+					//console.log('volume? ', volume) 
+				}
                 
             }
             // END VOLUME VISUALISATION
@@ -495,7 +559,7 @@ var mainVm = new Vue({
     },
     watch: {
         'ls.sliders.beatLen' : function(val){
-            console.log(val)
+            //console.log(val)
             this.ls.clock.beatLen = val * val
         }
     }
