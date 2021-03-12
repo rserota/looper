@@ -407,6 +407,16 @@ var mainVm = new Vue({
             mainVm.ls.instruments[which].source = event.target.value
             mainVm.instruments[which].source    = event.target.value
         },
+		muteTrack: function(trackNum){
+			if ( mainVm.loopTracks[trackNum].state.muted === true ){
+				mainVm.loopTracks[trackNum].state.muted = false
+				mainVm.loopTracks[trackNum].wad.gain.gain.setTargetAtTime(1,Wad.audioContext.currentTime, .01)
+			}
+			else {
+				mainVm.loopTracks[trackNum].state.muted = true
+				mainVm.loopTracks[trackNum].wad.gain.gain.setTargetAtTime(0,Wad.audioContext.currentTime, .01)
+			}
+		},
 		scheduleToTrack: function(trackNum){
 			this.loopTracks[trackNum].state.scheduled.muted = !this.loopTracks[trackNum].state.scheduled.muted
 		},
