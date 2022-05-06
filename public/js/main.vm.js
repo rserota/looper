@@ -182,7 +182,7 @@ var mainVm = new Vue({
                     console.log('delete...')
                     this.hotkeys.delete = true
                     if ( this.hotkeys.schedule && this.hotkeys.record ) {
-                        this.toggleMetronome()
+                        this.startClock()
                     }
                 }
                 else if ( event.data[2] === 0 ) {
@@ -436,13 +436,15 @@ var mainVm = new Vue({
         },
         toggleMetronome: function(){
 			this.ls.config.metronomeIsEnabled = !this.ls.config.metronomeIsEnabled
-            //console.log('...what\'s this do?')
+            console.log('...what\'s this do?')
         }, 
         startClock: function(){
             if ( this.rafID ) {
                 cancelAnimationFrame(this.rafID)
             }
-            this.ls.clock.start = performance.now() + 1000
+            this.ls.clock.start = performance.now() - (this.ls.clock.beatLen * this.beatsPerLoop) + 3000
+            console.log
+            // this.ls.clock.start = performance.now() - 2000
             this.animateFrame()
         },
         stopClock: function(){
@@ -525,7 +527,7 @@ var mainVm = new Vue({
 					}
                 }
                 if ( clock.curBeat != clock.prevBeat ) {
-                    //console.log('beat!',clock.curBeat)
+                    // console.log('beat!',clock.curBeat)
                     if ( this.ls.config.metronomeIsEnabled ) {
                         tick.play()
                     }

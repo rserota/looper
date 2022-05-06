@@ -60,14 +60,14 @@ try {
     httpApp.use(function(req, res, next){
         res.redirect('https://frivolous.biz' + req.url)
     })
-    httpApp.listen(80)
+    httpApp.listen(8000)
     console.log('Started HTTPS Server')
 }
 catch(e){
     console.log(e)
     console.log('could not start HTTPS server')
     server = HTTP.createServer(app)
-    server.listen(80)
+    server.listen(8000)
 }
 
 console.log("NODE_ENV: ", process.env.NODE_ENV)
