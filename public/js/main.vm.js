@@ -507,17 +507,17 @@ var mainVm = new Vue({
         },
         deleteTrack: function(trackNum){
             var disconnectDelay = (trackNum)=>{
-                this.loopTracks[trackNum].delay.delayNode.delayNode.disconnect();
-                this.loopTracks[trackNum].delay.delayNode.feedbackNode.disconnect();
-                this.loopTracks[trackNum].delay.delayNode.input.disconnect();
+                this.loopTracks[trackNum].wad.delay.delayNode.delayNode.disconnect();
+                this.loopTracks[trackNum].wad.delay.delayNode.feedbackNode.disconnect();
+                this.loopTracks[trackNum].wad.delay.delayNode.input.disconnect();
 
             }
             var reconnectDelay = (trackNum)=>{
-                this.loopTracks[trackNum].delay.delayNode.delayNode.connect(this.loopTracks[trackNum].delay.delayNode.feedbackNode)
-                this.loopTracks[trackNum].delay.delayNode.delayNode.connect(this.loopTracks[trackNum].delay.delayNode.wetNode)
-                this.loopTracks[trackNum].delay.delayNode.feedbackNode.connect(this.loopTracks[trackNum].delay.delayNode.delayNode);
-                this.loopTracks[trackNum].delay.delayNode.input.connect(this.loopTracks[trackNum].delay.delayNode.delayNode);
-                this.loopTracks[trackNum].delay.delayNode.input.connect(this.loopTracks[trackNum].delay.delayNode.output);
+                this.loopTracks[trackNum].wad.delay.delayNode.delayNode.connect(this.loopTracks[trackNum].delay.delayNode.feedbackNode)
+                this.loopTracks[trackNum].wad.delay.delayNode.delayNode.connect(this.loopTracks[trackNum].delay.delayNode.wetNode)
+                this.loopTracks[trackNum].wad.delay.delayNode.feedbackNode.connect(this.loopTracks[trackNum].delay.delayNode.delayNode);
+                this.loopTracks[trackNum].wad.delay.delayNode.input.connect(this.loopTracks[trackNum].delay.delayNode.delayNode);
+                this.loopTracks[trackNum].wad.delay.delayNode.input.connect(this.loopTracks[trackNum].delay.delayNode.output);
 
             }
             disconnectDelay(trackNum)
