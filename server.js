@@ -49,13 +49,13 @@ app.use(require('./routes/main.router')) // these routes always return HTML
 let server
 try {
     var httpsConfig = {
-        key: fs.readFileSync('/home/ubuntu/blind-tiger/ssl/privkey1.pem'),
-        cert: fs.readFileSync('/home/ubuntu/blind-tiger/ssl/cert1.pem'),
+        key: fs.readFileSync('/etc/privkey.pem'),
+        cert: fs.readFileSync('/etc/fullchain.pem'),
     }
 
     server = HTTPS.createServer(httpsConfig, app)
     // 443 is the default port for HTTPS traffic
-    server.listen(443)
+    server.listen(4433)
     var httpApp = express()
     httpApp.use(function(req, res, next){
         res.redirect('https://frivolous.biz' + req.url)

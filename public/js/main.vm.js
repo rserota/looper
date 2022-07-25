@@ -420,10 +420,10 @@ var mainVm = new Vue({
             }
         },
         modifyInstrument: function(isModified){
-            if ( ifModified ) {
+            if ( isModified ) {
                 this.ls.activeInstrument = this.ls.activeInstrument.toUpperCase()
             }
-            else if ( !ifModified ) {
+            else if ( !isModified ) {
                 this.ls.activeInstrument = this.ls.activeInstrument.toLowerCase()
             }
         }, 
@@ -504,6 +504,24 @@ var mainVm = new Vue({
                 thatVm.loopTracks[trackNum].wad.add(thatVm.nodes.soundSources)
                 thatVm.loopTracks[trackNum].state.recording = true;
             }
+        },
+        deleteTrack: function(trackNum){
+            var disconnectDelay = (trackNum)=>{
+                this.loopTracks[trackNum].delay.delayNode.delayNode.disconnect();
+                this.loopTracks[trackNum].delay.delayNode.feedbackNode.disconnect();
+                this.loopTracks[trackNum].delay.delayNode.input.disconnect();
+
+            }
+            var reconnectDelay = (trackNum)=>{
+                this.loopTracks[trackNum].delay.delayNode.delayNode.connect(this.loopTracks[trackNum].delay.delayNode.feedbackNode)
+                this.loopTracks[trackNum].delay.delayNode.delayNode.connect(this.loopTracks[trackNum].delay.delayNode.wetNode)
+                this.loopTracks[trackNum].delay.delayNode.feedbackNode.connect(this.loopTracks[trackNum].delay.delayNode.delayNode);
+                this.loopTracks[trackNum].delay.delayNode.input.connect(this.loopTracks[trackNum].delay.delayNode.delayNode);
+                this.loopTracks[trackNum].delay.delayNode.input.connect(this.loopTracks[trackNum].delay.delayNode.output);
+
+            }
+            disconnectDelay(trackNum)
+            setTimeout(function(){ reconnectDelay(trackNum) }, 100)
         },
         animateFrame: function(){
             var now = performance.now()
