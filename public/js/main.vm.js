@@ -513,11 +513,11 @@ var mainVm = new Vue({
 
             }
             var reconnectDelay = (trackNum)=>{
-                this.loopTracks[trackNum].wad.delay.delayNode.delayNode.connect(this.loopTracks[trackNum].delay.delayNode.feedbackNode)
-                this.loopTracks[trackNum].wad.delay.delayNode.delayNode.connect(this.loopTracks[trackNum].delay.delayNode.wetNode)
-                this.loopTracks[trackNum].wad.delay.delayNode.feedbackNode.connect(this.loopTracks[trackNum].delay.delayNode.delayNode);
-                this.loopTracks[trackNum].wad.delay.delayNode.input.connect(this.loopTracks[trackNum].delay.delayNode.delayNode);
-                this.loopTracks[trackNum].wad.delay.delayNode.input.connect(this.loopTracks[trackNum].delay.delayNode.output);
+                this.loopTracks[trackNum].wad.delay.delayNode.delayNode.connect(this.loopTracks[trackNum].wad.delay.delayNode.feedbackNode)
+                this.loopTracks[trackNum].wad.delay.delayNode.delayNode.connect(this.loopTracks[trackNum].wad.delay.delayNode.wetNode)
+                this.loopTracks[trackNum].wad.delay.delayNode.feedbackNode.connect(this.loopTracks[trackNum].wad.delay.delayNode.delayNode);
+                this.loopTracks[trackNum].wad.delay.delayNode.input.connect(this.loopTracks[trackNum].wad.delay.delayNode.delayNode);
+                this.loopTracks[trackNum].wad.delay.delayNode.input.connect(this.loopTracks[trackNum].wad.delay.delayNode.output);
 
             }
             disconnectDelay(trackNum)
